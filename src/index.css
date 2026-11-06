@@ -16,6 +16,11 @@
     --theme-text: #18181B;
   }
 
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: var(--theme-canvas);
@@ -24,6 +29,7 @@
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.01em;
     transition: background-color 0.25s ease, color 0.25s ease;
+    min-height: 100dvh;
   }
 
   h1, h2, h3, .font-serif-display {
@@ -64,6 +70,16 @@
 }
 .accent-theme-primary {
   accent-color: var(--theme-primary);
+}
+
+/* Clean Horizontal Scrollbars for Mobile & Tablet Filter Bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Perspective for 3D Wardrobe Doors */

@@ -99,7 +99,7 @@ export const StyleOnboardingModal: React.FC<StyleOnboardingModalProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16, scale: 0.96 }}
             transition={{ duration: 0.25 }}
-            className="relative z-10 w-full max-w-[460px] rounded-[28px] bg-white text-[#18181B] p-8 sm:p-10 shadow-[0_28px_90px_rgba(0,0,0,0.45)] flex flex-col justify-between min-h-[480px]"
+            className="relative z-10 w-full max-w-[460px] rounded-[24px] sm:rounded-[28px] bg-white text-[#18181B] p-5 sm:p-8 md:p-10 shadow-[0_28px_90px_rgba(0,0,0,0.45)] flex flex-col justify-between min-h-[420px] sm:min-h-[480px] max-h-[92dvh] overflow-y-auto"
           >
             <div>
               {/* Top 2-Step Progress Pill Bar + Always-Available Close Button */}
@@ -178,7 +178,7 @@ export const StyleOnboardingModal: React.FC<StyleOnboardingModalProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16, scale: 0.96 }}
             transition={{ duration: 0.25 }}
-            className="relative z-10 w-full max-w-5xl rounded-[28px] bg-white text-[#18181B] p-6 sm:p-9 shadow-[0_28px_90px_rgba(0,0,0,0.45)] flex flex-col justify-between max-h-[90vh]"
+            className="relative z-10 w-full max-w-5xl rounded-[24px] sm:rounded-[28px] bg-white text-[#18181B] p-4 sm:p-7 md:p-9 shadow-[0_28px_90px_rgba(0,0,0,0.45)] flex flex-col justify-between max-h-[92dvh]"
           >
             {/* Top Bar with Back Arrow, Full Progress Bar & Always-Available Close Button */}
             <div>
@@ -274,12 +274,12 @@ export const StyleOnboardingModal: React.FC<StyleOnboardingModalProps> = ({
             </div>
 
             {/* Bottom Continue CTA Bar */}
-            <div className="pt-4 mt-2 border-t border-stone-100 flex items-center gap-3">
+            <div className="pt-3.5 sm:pt-4 mt-2 border-t border-stone-100 flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3">
               {onClose && (
                 <button
                   type="button"
                   onClick={onClose}
-                  className="py-3.5 px-5 rounded-2xl border border-stone-300 text-stone-700 hover:bg-stone-100 font-semibold text-sm cursor-pointer"
+                  className="py-2.5 sm:py-3.5 px-4 sm:px-5 rounded-xl sm:rounded-2xl border border-stone-300 text-stone-700 hover:bg-stone-100 font-semibold text-xs sm:text-sm cursor-pointer"
                 >
                   Đóng
                 </button>
@@ -288,19 +288,19 @@ export const StyleOnboardingModal: React.FC<StyleOnboardingModalProps> = ({
                 type="button"
                 disabled={selectedStyles.length === 0 || isSubmitting}
                 onClick={handleFinish}
-                className={`flex-1 py-3.5 px-6 rounded-2xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2.5 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 ${
                   selectedStyles.length > 0
                     ? 'bg-theme-primary text-white shadow-md cursor-pointer'
                     : 'bg-[#ECEBE6] text-stone-400 cursor-not-allowed'
                 }`}
               >
                 {selectedStyles.length === 0 ? (
-                  <span>Hãy tích chọn ít nhất 1 phong cách để tiếp tục</span>
+                  <span>Chọn ít nhất 1 phong cách để tiếp tục</span>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4 shrink-0" />
                     <span>
-                      Hoàn tất & Xem Gợi Ý Phối Đồ ({selectedStyles.length} phong cách đã chọn)
+                      Hoàn tất & Xem Gợi Ý ({selectedStyles.length} phong cách)
                     </span>
                   </>
                 )}

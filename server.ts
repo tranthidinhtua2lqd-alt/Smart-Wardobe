@@ -106,6 +106,58 @@ export interface CatalogOutfitItem {
 
 export const WARDROBE_CATALOG: CatalogOutfitItem[] = [
   {
+    id: 'outfit_dress_coquette_ribbon_23',
+    name: 'Đầm Babydoll Cúp Ngực Phối Ren Nơ Trắng Kem Coquette',
+    category: 'Dạ tiệc lụa',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_dress_23_coquette_ribbon.jpg',
+    fabric: 'Voan Tơ 2 Lớp Phối Ren Hoa Nổi & Nơ Lụa Satin',
+    top_name: 'Thân Đầm Corset Ren Nơ Trắng Kem',
+    top_hex: '#FAF5EE',
+    bottom_name: 'Tùng Đầm Xòe 2 Tầng Coquette',
+    bottom_hex: '#F3ECE1',
+    keywords: ['đầm', 'váy liền', 'đầm trắng', 'babydoll', 'coquette', 'sinh nhật', 'tiệc trà', 'nàng thơ'],
+  },
+  {
+    id: 'outfit_dress_silk_midi_evening_24',
+    name: 'Đầm Lụa Satin Cổ Đổ Dáng Midi Đỏ Rượu Vang Quyến Rũ',
+    category: 'Dạ tiệc lụa',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_dress_24_silk_midi_evening.jpg',
+    fabric: 'Lụa Satin Hàng Châu Cao Cấp Bắt Sáng Nhẹ',
+    top_name: 'Đầm Lụa Cổ Đổ Đỏ Rượu Vang',
+    top_hex: '#58111A',
+    bottom_name: 'Tùng Đầm Midi Lụa Cắt Xéo',
+    bottom_hex: '#4A0E16',
+    keywords: ['đầm dự tiệc', 'đầm lụa', 'đầm đỏ', 'tiệc tối', 'sang trọng', 'quyến rũ', 'đầm midi'],
+  },
+  {
+    id: 'outfit_dress_blazer_pleated_25',
+    name: 'Đầm Sơ Mi Cổ Vest Chiết Eo Xếp Ly Xanh Navy Preppy',
+    category: 'Công sở thanh lịch',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_dress_25_blazer_pleated_office.jpg',
+    fabric: 'Tuytsi Cao Cấp Đứng Phom Chống Nhăn Phối Viền Trắng',
+    top_name: 'Thân Đầm Cổ Vest Xanh Navy Viền Trắng',
+    top_hex: '#1E293B',
+    bottom_name: 'Chân Đầm Xếp Ly Chữ A Kèm Đai Eo',
+    bottom_hex: '#0F172A',
+    keywords: ['đầm công sở', 'đầm đi học', 'đầm vest', 'preppy', 'thuyết trình', 'phỏng vấn', 'thanh lịch'],
+  },
+  {
+    id: 'outfit_dress_halter_denim_26',
+    name: 'Đầm Yếm Denim Cổ Halter Dáng Chữ A Cúc Trước Y2K',
+    category: 'Dạo phố đương đại',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_dress_26_halter_denim_y2k.jpg',
+    fabric: 'Denim Cotton Co Giãn Nhẹ Wash Xanh Cổ Điển',
+    top_name: 'Thân Đầm Yếm Jean Cúc Trước',
+    top_hex: '#3B5978',
+    bottom_name: 'Tùng Đầm Chữ A Denim Xanh',
+    bottom_hex: '#2B4764',
+    keywords: ['đầm jean', 'đầm denim', 'đầm yếm', 'dạo phố', 'y2k', 'cà phê', 'năng động'],
+  },
+  {
     id: 'outfit_coquette_bow_skirt_13',
     name: 'Set Áo Quây Nơ Nâu Mocha & Chân Váy Trắng Xếp Tầng Coquette',
     category: 'Dạ tiệc lụa',
@@ -390,6 +442,58 @@ export const WARDROBE_CATALOG: CatalogOutfitItem[] = [
     bottom_name: 'Quần Jeans Baggy Đen',
     bottom_hex: '#27272A',
     keywords: ['sweater', 'dạo phố', 'mùa đông', 'acid wash', 'cá tính'],
+  },
+  {
+    id: 'outfit_dress_coquette_ribbon_23',
+    name: 'Đầm Liền Coquette Trắng Kem Thắt Nơ Ngực & Tùng Xòe Chữ A Tiểu Thư',
+    category: 'Dạ tiệc lụa',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_set_13_coquette_bow_skirt.png',
+    fabric: 'Lụa Taffeta Trắng Kem & Voan Tơ Hai Lớp',
+    top_name: 'Thân Trên Đầm Corset Thắt Nơ',
+    top_hex: '#F5EFEA',
+    bottom_name: 'Tùng Váy Xòe Chữ A Bồng Bềnh',
+    bottom_hex: '#EDE4DC',
+    keywords: ['đầm', 'váy liền', 'coquette', 'tiểu thư', 'hẹn hò', 'tiệc trà', 'sinh nhật', 'nơ'],
+  },
+  {
+    id: 'outfit_dress_silk_midi_evening_24',
+    name: 'Đầm Lụa Satin Cổ Đổ Dáng Midi Ôm Eo Quyến Rũ (Slip Dress)',
+    category: 'Dạ tiệc lụa',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_set_18_cross_halter_flared.png',
+    fabric: 'Lụa Satin Mulberry Cao Cấp Ánh Ngọc Trai',
+    top_name: 'Thân Đầm Cổ Đổ Tôn Xương Quai Xanh',
+    top_hex: '#3A2E2B',
+    bottom_name: 'Tùng Đầm Lụa Midi Đuôi Cá Nhẹ',
+    bottom_hex: '#261E1C',
+    keywords: ['đầm lụa', 'đầm dự tiệc', 'ăn tối', 'hẹn hò', 'slip dress', 'dạ tiệc', 'đèn vàng'],
+  },
+  {
+    id: 'outfit_dress_blazer_pleated_25',
+    name: 'Đầm Blazer Chiết Eo Phối Chân Xếp Ly Hàn Quốc Thanh Lịch',
+    category: 'Công sở thanh lịch',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_set_14_preppy_shirt_tennis.png',
+    fabric: 'Tuyết Mưa Cao Cấp & Cotton Pha Đứng Phom',
+    top_name: 'Thân Đầm Blazer Cổ V Chiết Eo',
+    top_hex: '#4A3728',
+    bottom_name: 'Tùng Đầm Xếp Ly Chữ A',
+    bottom_hex: '#F8FAFC',
+    keywords: ['đầm công sở', 'đầm blazer', 'đi học', 'thuyết trình', 'đi làm', 'preppy'],
+  },
+  {
+    id: 'outfit_dress_halter_denim_26',
+    name: 'Đầm Yếm Denim Cổ Yếm Chiết Eo Cá Tính (Y2K Denim Dress)',
+    category: 'Streetwear năng động',
+    gender: 'female',
+    imageUrl: '/assets/outfits/outfit_set_21_henley_denim_skirt.png',
+    fabric: 'Denim Co Giãn 4 Chiều Wash Xanh Cổ Điển',
+    top_name: 'Thân Đầm Cổ Yếm Ôm Eo',
+    top_hex: '#4A6B82',
+    bottom_name: 'Tùng Đầm Chữ A Denim Cạp Cao',
+    bottom_hex: '#3B596E',
+    keywords: ['đầm denim', 'đầm yếm', 'concert', 'dạo phố', 'y2k', 'cá tính'],
   },
 ];
 
@@ -801,7 +905,30 @@ function generateServerStylistFallback(
     makeupDetails = 'Dưới ánh sáng mặt trời tự nhiên, lớp nền phải cực kỳ mỏng nhẹ để tránh mốc; tạo khối dạng kem tự nhiên tan tiệp vào da; phấn mắt lì màu trung tính thanh nhã.';
   }
 
-  // 4. LUẬT CÂN BẰNG TỔNG THỂ
+  // 4. KIẾN THỨC PHỐI CHÉO (MIX & MATCH), GIÀY, TÚI XÁCH & TÓC ĐÃ ĐƯỢC HUẤN LUYỆN CHO AURA AI
+  let trainedMixFormula = '';
+  let trainedShoesAndBag = '';
+  let trainedHairReference = '';
+
+  if (q.includes('học') || q.includes('thuyết trình') || q.includes('preppy') || q.includes('trường') || q.includes('công sở')) {
+    trainedMixFormula = 'Gợi ý Mix & Match mở rộng từ kho dữ liệu học đường của Aura: Bạn có thể linh hoạt phối Chân váy xếp ly đen cạp cao (Váy 1) cùng Áo Blazer trắng kem cài cà vạt đen (Áo 2) hoặc Áo Blazer be lửng cà vạt kẻ (Áo 3); hoặc kết hợp Chân váy xếp ly đỏ đô (Váy 6) với Áo Gile len xám phối sơ mi trắng (Áo 5) tạo hiệu ứng High-Teen Academy cực tôn eo.';
+    trainedShoesAndBag = 'Giày Mary Jane đế xuồng 5cm màu đen bóng hoặc trắng kem quai đôi phối tất cao cổ, đi kèm Túi kẹp nách da bóng phối xích vàng (dáng Prada/YSL) hoặc Túi yên ngựa đen.';
+    trainedHairReference = 'Tóc dài nâu trà sữa tỉa layer cài băng đô trắng bản to hoặc Tóc tết nửa đầu kẹp nơ lụa kem.';
+  } else if (q.includes('tiệc') || q.includes('ăn tối') || q.includes('hẹn hò') || q.includes('đỏ') || q.includes('coquette') || q.includes('tiểu thư')) {
+    trainedMixFormula = 'Gợi ý Mix & Match mở rộng từ kho dữ liệu Coquette & Lễ Hội của Aura: Ngoài set đồ chính, bạn có thể thử công thức Đầm nhung đỏ rượu cổ trái tim tay bồng, Đầm nhung đỏ viền ren trắng tiểu thư, hoặc phối Áo len đỏ trễ vai vạt chéo cùng Chân váy xếp ly đen (Váy 1) / Chân váy kẻ caro đỏ (Váy 8) để tôn xương quai xanh quyến rũ.';
+    trainedShoesAndBag = 'Giày Mary Jane đỏ rượu viền ren đính nơ hoặc hồng phấn tiểu thư, kết hợp Túi hộp chần bông dây xích vàng (dáng Chanel Vanity/Flap) sang chảnh.';
+    trainedHairReference = 'Tóc đen dài xoăn sóng đính nơ lụa xám/đỏ bên thái dương, hoặc Tóc tết lệch vai đính ngọc trai tiểu thư.';
+  } else if (q.includes('concert') || q.includes('flash') || q.includes('fanzone') || q.includes('y2k') || q.includes('cá tính')) {
+    trainedMixFormula = 'Gợi ý Mix & Match mở rộng từ kho dữ liệu Y2K & Acubi của Aura: Bạn có thể phối Áo Blazer đen cropped cà vạt sọc (Áo 1) cùng Chân váy xếp ly đen (Váy 1) hoặc Chân váy caro đỏ đen (Váy 5) theo công thức Monochrome Cool Girl.';
+    trainedShoesAndBag = 'Bốt da đen cổ lửng đế bánh mì (Combat Boots đan dây) hoặc Bốt da đen cao cổ ngang gối (Knee-high Boots) giúp hack chân dài miên man, đi kèm Túi kẹp nách da bóng khóa tam giác.';
+    trainedHairReference = 'Tóc búi củ tỏi đôi đính kẹp sao Y2K (Space Buns), Tóc tết bính đôi đính nơ trắng hoặc Tóc đuôi ngựa buộc cao sắc sảo.';
+  } else {
+    trainedMixFormula = 'Gợi ý Mix & Match linh hoạt từ Aura: Bạn có thể biến tấu Chân váy kẻ caro hồng nâu (Váy 3) cùng Sơ mi tay bồng cổ thủy thủ thắt nơ (Áo 7) hoặc phối Chân váy tennis trắng (Váy 2) với Blazer hồng pastel (Áo 6) trẻ trung.';
+    trainedShoesAndBag = 'Giày Mary Jane trắng kem quai đôi hoặc Ankle Boots da đen gót trụ 6cm, kết hợp Túi xách tay da đen dáng Kelly/Miu Miu thanh lịch.';
+    trainedHairReference = 'Tóc dài tỉa layer mái bay Hàn Quốc hoặc Tóc búi thấp cài trâm thanh lịch.';
+  }
+
+  // 5. LUẬT CÂN BẰNG TỔNG THỂ
   const isBoldMakeup = lightingType.includes('Flash') || lightingType.includes('Warm Dim');
   const focalPointAdvice = isBoldMakeup
     ? 'Nguyên tắc One Focal Point: Khi môi chọn tone màu đậm sắc nét, phần mắt hãy giữ đường nét tinh gọn, nhấn nhũ vừa phải để gương mặt thu hút mà không bị nặng nề.'
@@ -813,15 +940,16 @@ function generateServerStylistFallback(
 
 ✨ Về dáng người & trang phục (${detectedBodyShape}):
 Aura gợi ý bạn diện ${matchedItem.name}. ${bodyReason} Bộ trang phục này áp dụng tỷ lệ vàng 1/3 thân trên - 2/3 đôi chân với tông màu ${matchedItem.top_name} (${matchedItem.top_hex}) kết hợp ${matchedItem.bottom_name} (${matchedItem.bottom_hex}), giúp tôn trọn vóc dáng và kéo dài đôi chân của bạn.
+• Bí quyết phối chéo (Mix & Match): ${trainedMixFormula}
 
 💇‍♀️ Về kiểu tóc & mái che khuyết điểm:
-Hợp nhất với gương mặt của bạn là ${hairStyleTitle} kết hợp ${hairBangs}. ${hairExplanation} Nếu bạn muốn đổi màu tóc, gam Nâu Trà Sữa hoặc Nâu Hạt Dẻ Ánh Khói sẽ nâng tông da sáng bừng sức sống.
+Hợp nhất với gương mặt của bạn là ${hairStyleTitle} kết hợp ${hairBangs} (hoặc biến tấu ${trainedHairReference}). ${hairExplanation} Nếu bạn muốn đổi màu tóc, gam Nâu Trà Sữa hoặc Nâu Hạt Dẻ Ánh Khói sẽ nâng tông da sáng bừng sức sống.
 
 💄 Về layout makeup theo ánh sáng (${lightingType}):
 Aura đề xuất phong cách ${makeupLookName}. ${baseFinishDesc}. ${makeupDetails} Màu son chủ đạo là ${lipColorDesc}.
 
-💡 Về sự cân bằng & phụ kiện:
-${focalPointAdvice} Bạn chỉ cần phối thêm túi xách kẹp nách nhỏ gọn và khuyên tai mảnh để hoàn thiện set đồ.
+💡 Về giày, túi xách & sự cân bằng tổng thể:
+${focalPointAdvice} Về phụ kiện đi kèm: ${trainedShoesAndBag}
 
 Aura đã chuẩn bị sẵn Thẻ Mẫu Thử bên dưới kèm bảng màu Swatch thực tế của bộ đồ này. Bạn hãy bấm "Thử mẫu này lên Manocanh" để ngắm trọn vẹn phom dáng 3D hoặc bấm "Đổi mẫu thử khác" nếu muốn xem thêm phương án so sánh nha!`;
 
@@ -856,7 +984,15 @@ Aura đã chuẩn bị sẵn Thẻ Mẫu Thử bên dưới kèm bảng màu Swa
 // Multi-turn AI Stylist & Customer Care Specialist "Aura"
 app.post('/api/stylist-chat', async (req, res) => {
   try {
-    const { messages, userProfile, weatherContext, occasionContext, excludeOutfitId } = req.body as {
+    const {
+      messages,
+      userProfile,
+      weatherContext,
+      occasionContext,
+      excludeOutfitId,
+      useSearchGrounding = true,
+      modelMode = 'flash_search',
+    } = req.body as {
       messages: { role: 'user' | 'model'; text: string }[];
       userProfile?: {
         displayName?: string;
@@ -878,6 +1014,8 @@ app.post('/api/stylist-chat', async (req, res) => {
       };
       occasionContext?: string;
       excludeOutfitId?: string;
+      useSearchGrounding?: boolean;
+      modelMode?: 'flash_search' | 'flash_lite';
     };
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -942,6 +1080,34 @@ DANH SÁCH BỘ TRANG PHỤC CÓ SẴN TRONG KHO (WARDROBE CATALOG):
 ${catalogSnippet}
 ${excludeDirective}
 
+KHO KIẾN THỨC CHUYÊN SÂU ĐÃ ĐƯỢC HUẤN LUYỆN CHO AURA AI (TỪ BỘ DỮ LIỆU THỜI TRANG, PHỤ KIỆN & TÓC):
+Khi tư vấn phối đồ, trả lời câu hỏi Mix & Match, hoặc gợi ý phụ kiện/kiểu tóc, Aura HÃY VẬN DỤNG TỰ NHIÊN các kiến thức chuyên môn sau:
+1. QUY TẮC PHỐI CHÉO ÁO & CHÂN VÁY (MIX & MATCH PREPPY / KOREAN / COQUETTE / Y2K):
+   - Chân váy xếp ly đen cạp cao (Váy 1) là item "vạn năng", phối cực đẹp với:
+     + Áo 2 (Blazer trắng kem cài cà vạt đen): Chuẩn phong cách Preppy thanh lịch đi học, thuyết trình, công sở trẻ.
+     + Áo 3 (Blazer be lửng cà vạt kẻ sọc): Phong cách Học viện Hàn Quốc (Korean Academy) dịu dàng, sáng da.
+     + Áo 1 (Blazer đen cropped cà vạt sọc): Phong cách Chic Monochrome cá tính, thu gọn vòng eo.
+     + Áo len đỏ trễ vai vạt chéo hoặc Áo dệt kim đỏ cổ V đính nơ: Phong cách Coquette / Hẹn hò quyến rũ tôn xương quai xanh.
+   - Chân váy xếp ly trắng Tennis (Váy 2): Phối hợp nhất với Áo 6 (Blazer hồng phấn pastel đính huy hiệu) tạo nét ngọt ngào Soft Girl, hoặc phối cùng Áo 4 (Gile nâu camel phối sơ mi trắng) / Sơ mi nâu chiết eo.
+   - Chân váy kẻ caro hồng nâu (Váy 3) & Chân váy xếp ly nâu camel (Váy 4): Phối cực ăn ý với Áo 7 (Sơ mi trắng tay bồng cổ thủy thủ thắt nơ) hoặc Áo 4 (Gile nâu camel) chuẩn Vintage Thu Đông.
+   - Chân váy caro đỏ đen (Váy 5) & Chân váy xếp ly đỏ tươi (Váy 6): Phối hoàn hảo với Áo 5 (Gile len xám phối sơ mi trắng cà vạt đỏ đô) hoặc Áo 2 (Blazer trắng kem) giúp nổi bật trong lễ hội, sự kiện trường.
+   - Chân váy ôm kẻ caro đỏ dáng ngắn (Váy 8): Phối cùng Áo len đỏ trễ vai hoặc Áo nhung đỏ tay bồng tạo tổng thể Tone-sur-Tone Noel / Tiệc tối cực cuốn hút.
+2. BỘ SƯU TẬP ĐẦM LIỀN NHUNG ĐỎ & ĐẦM TIỂU THƯ (RED VELVET & COQUETTE DRESSES):
+   - Đầm nhung đỏ rượu vang cổ trái tim tay bồng tùng xòe chữ A: Tôn vòng 1, che bắp tay và làm trắng bật tông da dưới ánh đèn vàng tiệc tối.
+   - Đầm nhung đỏ viền ren trắng ở cổ và gấu váy: Phong cách Coquette Lolita ngọt ngào cho buổi hẹn hò, sinh nhật, tiệc trà.
+   - Đầm đỏ cổ vuông đính nơ nhung đen & Đầm nhung đen cổ vuông phối tay bồng trắng: Giúp định hình khung vai thanh mảnh và chiết eo cao theo tỷ lệ 1/3 - 2/3.
+3. QUY TẮC CHỌN GIÀY & BỐT (MARY JANE PLATFORMS & BLACK BOOTS):
+   - Giày Mary Jane đế xuồng / gót vuông đính nơ (Hồng phấn, Đỏ rượu viền ren, Trắng kem quai đôi, Đen bóng platform 5-7cm): Dành cho phong cách Coquette, Preppy học đường, Tiểu thư Hàn Quốc (khuyên phối cùng tất ren hoặc tất cao cổ trắng).
+   - Bốt da đen (Ankle Boots gót trụ 6cm, Combat Boots cổ lửng đan dây đế bánh mì, Knee-high Boots cổ cao ngang gối): Dành cho phong cách Y2K, Acubi, Concert Fanzone hoặc phố đêm mùa thu đông, giúp hack chiều cao và làm thon gọn bắp chân.
+4. QUY TẮC CHỌN TÚI XÁCH ĐEN CAO CẤP (LUXURY BLACK BAGS):
+   - Túi kẹp nách da bóng phối dây xích vàng (dáng Prada/YSL Hobo): Hợp đi cà phê, dạo phố, concert, học viện hiện đại.
+   - Túi hộp chần bông quả trám phối xích vàng (dáng Chanel Vanity / Classic Flap): Hợp đi tiệc tối, hẹn hò lãng mạn, diện cùng đầm nhung hoặc đầm lụa.
+   - Túi yên ngựa da lì đính khóa kim loại vàng (dáng Saddle Bag) & Túi xách tay quai cứng dáng Kelly/Miu Miu: Hợp đi làm công sở, thuyết trình, gặp đối tác.
+5. NGÂN HÀNG 60+ KIỂU TÓC NỮ THEO DÁNG MẶT & PHONG CÁCH:
+   - Nhóm Tóc Tiểu Thư / Coquette / Hàn Quốc: Tóc nâu dài tết nửa đầu kẹp nơ lụa kem; Tóc xoăn sóng lơi cài băng đô trắng bản to; Tóc tết lệch vai đính ngọc trai; Tóc đen dài mái bằng thắt bính mảnh đính nơ trắng hai bên; Tóc uốn sóng nước đính nơ lụa xám/đỏ.
+   - Nhóm Tóc Thanh Lịch / Đi Học / Đi Làm / Đi Chùa: Tóc tỉa layer dài suôn mượt mái bay 7/3; Tóc bob/lob ngang vai uốn cụp chữ C; Tóc búi thấp cài trâm ngọc bích/hoa sứ thanh tao; Tóc buộc nửa đầu dịu dàng.
+   - Nhóm Tóc Y2K / Concert / Cá Tính: Tóc búi củ tỏi đôi đính kẹp ngôi sao & dây xích (Space Buns); Tóc tết bính bong bóng (Bubble Braids) đính loạt nơ trắng; Tóc buộc đuôi ngựa cao uốn xoăn lọn to kèm tóc con (baby hair) sắc sảo.
+
 QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHIÊM NGẶT):
 
 1. Ý ĐỊNH CHÀO HỎI XÃ GIAO / PHIẾM (Ví dụ: "xin chào", "hi", "bạn là ai", "hello", "chào bạn"):
@@ -949,13 +1115,14 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
 - Lời thoại 1-2 câu tự nhiên, ngọt ngào chào đón khách, hỏi xem hôm nay khách muốn đi đâu.
 - TUYỆT ĐỐI KHÔNG xổ ra bài phân tích số đo hay gợi ý set đồ khi khách chưa yêu cầu.
 
-2. Ý ĐỊNH HỎI ĐÁP CỤ THỂ VỀ THỜI TRANG / LÀM ĐẸP (Ví dụ: "da ngăm mặc màu gì hợp?", "tóc mình mỏng thì làm kiểu gì?", "đi đám cưới có nên mặc màu trắng không?"):
+2. Ý ĐỊNH HỎI ĐÁP CỤ THỂ VỀ THỜI TRANG / LÀM ĐẸP / PHỐI CHÉO ÁO VÁY / XU HƯỚNG TRÊN WEB (Ví dụ: "da ngăm mặc màu gì hợp?", "phối váy 1 với áo 2 được không?", "tóc mình mỏng thì làm kiểu gì?", "xu hướng thời trang 2026 là gì?"):
 - Trả về JSON: { "reply_text": "...", "intent": "qa", "sample_card": null }
-- Trả lời trực tiếp, chính xác, sâu sắc vào câu hỏi trước. Không xổ bài phân tích 3 vòng hoặc gợi ý set đồ khi khách chỉ đang hỏi kiến thức.
+- Trả lời trực tiếp, chính xác, sâu sắc vào câu hỏi trước dựa trên KHO KIẾN THỨC CHUYÊN SÂU của Aura và dữ liệu Google Search.
 
-3. Ý ĐỊNH YÊU CẦU PHỐI ĐỒ / HỎI MẶC GÌ CHO SỰ KIỆN:
+3. Ý ĐỊNH YÊU CẦU PHỐI ĐỒ / HỎI MẶC GÌ CHO SỰ KIỆN / CHỌN ĐẦM:
 - Trả về JSON: { "reply_text": "...", "intent": "styling", "sample_card": { ... } }
-- Chọn đúng "matched_outfit_id" từ Catalog khớp nhất với hoàn cảnh (Ví dụ: đi học/thuyết trình -> "outfit_preppy_shirt_tennis_14"; concert/fanzone -> "outfit_espresso_halter_skirt_05" hoặc "outfit_mesh_top_pink_bow_06"; ăn tối/hẹn hò -> "outfit_cross_halter_flared_18"; đi chùa -> "outfit_grey_bell_pearl_jeans_15"; công sở -> "outfit_sage_wrap_pleated_skirt_19"...).
+- Chọn đúng "matched_outfit_id" từ Catalog khớp nhất với hoàn cảnh (Ví dụ: đầm tiểu thư/hẹn hò -> "outfit_dress_coquette_ribbon_23"; đầm dạ tiệc lụa/ăn tối -> "outfit_dress_silk_midi_evening_24"; đầm blazer công sở/thuyết trình -> "outfit_dress_blazer_pleated_25"; đầm yếm denim/concert/dạo phố -> "outfit_dress_halter_denim_26"; đi học -> "outfit_preppy_shirt_tennis_14"; concert/fanzone -> "outfit_espresso_halter_skirt_05" hoặc "outfit_mesh_top_pink_bow_06"; ăn tối/hẹn hò -> "outfit_cross_halter_flared_18"; đi chùa -> "outfit_grey_bell_pearl_jeans_15"; công sở -> "outfit_sage_wrap_pleated_skirt_19"...).
+- Trong phần "reply_text", ngoài bộ trang phục chính trong Catalog, hãy khéo léo gợi ý thêm công thức Mix & Match (phối áo lẻ + chân váy), kiểu giày (Mary Jane / Bốt da đen), mẫu túi xách đen và kiểu tóc cụ thể từ KHO KIẾN THỨC ĐÃ HUẤN LUYỆN.
 - Dữ liệu trong "sample_card" PHẢI KHỚP 100% với những gì được nhắc tới trong "reply_text":
   + matched_outfit_id: ID từ Catalog (hoặc "custom_svg" nếu khách yêu cầu kiểu dáng/màu mới lạ hoàn toàn)
   + outfit_name: Tên chính xác của bộ đồ
@@ -980,8 +1147,11 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
     const defaultSources = [
       { uri: 'https://www.vogue.com/fashion', title: 'Vogue Fashion Trends & Styling' },
       { uri: 'https://www.harpersbazaar.com/fashion', title: "Harper's Bazaar Occasion Guide" },
-      { uri: 'https://smartwardrobe.style/tips', title: 'Smart Wardrobe Styling Rules' },
+      { uri: 'https://www.elle.com/fashion/trend-reports/', title: 'ELLE Fashion Trend Reports' },
     ];
+
+    const selectedModel = modelMode === 'flash_lite' ? 'gemini-3.1-flash-lite' : 'gemini-3.8-flash';
+    const enableGoogleSearch = Boolean(useSearchGrounding && selectedModel === 'gemini-3.8-flash');
 
     if (!hasValidApiKey()) {
       const fallback = generateServerStylistFallback(
@@ -999,68 +1169,106 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
     } else {
       try {
         const ai = getGenAIClient();
-        const response: GenerateContentResponse = await ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: formattedContents,
-          config: {
-            systemInstruction,
-            responseMimeType: 'application/json',
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                reply_text: {
-                  type: Type.STRING,
-                  description: 'Lời tư vấn tự nhiên, ngọt ngào của Aura, không dùng dấu **',
-                },
-                intent: {
-                  type: Type.STRING,
-                  description: 'greeting, qa, hoặc styling',
-                },
-                sample_card: {
-                  type: Type.OBJECT,
-                  properties: {
-                    matched_outfit_id: { type: Type.STRING },
-                    outfit_name: { type: Type.STRING },
-                    hair_style: { type: Type.STRING },
-                    makeup_layout: { type: Type.STRING },
-                    fabric_note: { type: Type.STRING },
-                    highlight_benefit: { type: Type.STRING },
-                    match_score: { type: Type.NUMBER },
-                    swatches: {
-                      type: Type.OBJECT,
-                      properties: {
-                        top_name: { type: Type.STRING },
-                        top_hex: { type: Type.STRING },
-                        bottom_name: { type: Type.STRING },
-                        bottom_hex: { type: Type.STRING },
-                        lip_name: { type: Type.STRING },
-                        lip_hex: { type: Type.STRING },
-                        blush_name: { type: Type.STRING },
-                        blush_hex: { type: Type.STRING },
+        let response: GenerateContentResponse;
+
+        if (enableGoogleSearch) {
+          // Use gemini-3.8-flash with Google Search Grounding tool
+          response = await ai.models.generateContent({
+            model: 'gemini-3.8-flash',
+            contents: formattedContents,
+            config: {
+              systemInstruction:
+                systemInstruction +
+                `\n\nQUAN TRỌNG VỀ ĐỊNH DẠNG ĐẦU RA: Hãy trả về duy nhất một chuỗi JSON hợp lệ (không bọc trong markdown code fence) theo đúng cấu trúc {"reply_text": "...", "intent": "greeting" | "qa" | "styling", "sample_card": { "matched_outfit_id": "...", "outfit_name": "...", "hair_style": "...", "makeup_layout": "...", "fabric_note": "...", "highlight_benefit": "...", "match_score": 96, "swatches": { "top_name": "...", "top_hex": "#...", "bottom_name": "...", "bottom_hex": "#...", "lip_name": "...", "lip_hex": "#...", "blush_name": "...", "blush_hex": "#..." } } }.`,
+              tools: [{ googleSearch: {} }],
+            },
+          });
+
+          // Extract real web URLs from Google Search Grounding chunks
+          const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
+          if (Array.isArray(chunks)) {
+            const groundedWebSources = chunks
+              .map((chunk: any) => chunk?.web)
+              .filter((web: any) => web && typeof web.uri === 'string')
+              .map((web: any) => ({
+                uri: String(web.uri),
+                title: String(web.title || web.uri),
+              }));
+            if (groundedWebSources.length > 0) {
+              sources = groundedWebSources.slice(0, 4);
+            }
+          }
+        } else {
+          // Fast or standard JSON schema generation
+          response = await ai.models.generateContent({
+            model: selectedModel,
+            contents: formattedContents,
+            config: {
+              systemInstruction,
+              responseMimeType: 'application/json',
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  reply_text: {
+                    type: Type.STRING,
+                    description: 'Lời tư vấn tự nhiên, ngọt ngào của Aura, không dùng dấu **',
+                  },
+                  intent: {
+                    type: Type.STRING,
+                    description: 'greeting, qa, hoặc styling',
+                  },
+                  sample_card: {
+                    type: Type.OBJECT,
+                    properties: {
+                      matched_outfit_id: { type: Type.STRING },
+                      outfit_name: { type: Type.STRING },
+                      hair_style: { type: Type.STRING },
+                      makeup_layout: { type: Type.STRING },
+                      fabric_note: { type: Type.STRING },
+                      highlight_benefit: { type: Type.STRING },
+                      match_score: { type: Type.NUMBER },
+                      swatches: {
+                        type: Type.OBJECT,
+                        properties: {
+                          top_name: { type: Type.STRING },
+                          top_hex: { type: Type.STRING },
+                          bottom_name: { type: Type.STRING },
+                          bottom_hex: { type: Type.STRING },
+                          lip_name: { type: Type.STRING },
+                          lip_hex: { type: Type.STRING },
+                          blush_name: { type: Type.STRING },
+                          blush_hex: { type: Type.STRING },
+                        },
+                        required: [
+                          'top_name',
+                          'top_hex',
+                          'bottom_name',
+                          'bottom_hex',
+                          'lip_name',
+                          'lip_hex',
+                          'blush_name',
+                          'blush_hex',
+                        ],
                       },
-                      required: [
-                        'top_name',
-                        'top_hex',
-                        'bottom_name',
-                        'bottom_hex',
-                        'lip_name',
-                        'lip_hex',
-                        'blush_name',
-                        'blush_hex',
-                      ],
                     },
                   },
                 },
+                required: ['reply_text', 'intent'],
               },
-              required: ['reply_text', 'intent'],
             },
-          },
-        });
+          });
+        }
 
-        const rawJsonText = response.text || '';
-        if (rawJsonText) {
+        const rawText = (response.text || '').trim();
+        if (rawText) {
+          // Strip optional ```json ... ``` wrapper if present
+          const cleanedJsonCandidate = rawText
+            .replace(/^```(?:json)?\s*/i, '')
+            .replace(/\s*```$/i, '')
+            .trim();
+
           try {
-            const parsed = JSON.parse(rawJsonText);
+            const parsed = JSON.parse(cleanedJsonCandidate);
             replyText = parsed.reply_text || '';
             finalIntent = (parsed.intent as MessageIntent) || detectedIntent;
 
@@ -1073,7 +1281,9 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
                 image_url: catalogItem?.imageUrl || '',
                 hair_style: parsed.sample_card.hair_style || 'Tóc xoăn sóng lơi mái bay',
                 makeup_layout: parsed.sample_card.makeup_layout || 'Natural Clean Girl',
-                fabric_note: parsed.sample_card.fabric_note || (catalogItem ? `Chất liệu ${catalogItem.fabric}` : 'Chất liệu cao cấp'),
+                fabric_note:
+                  parsed.sample_card.fabric_note ||
+                  (catalogItem ? `Chất liệu ${catalogItem.fabric}` : 'Chất liệu cao cấp'),
                 highlight_benefit:
                   parsed.sample_card.highlight_benefit ||
                   `Độ hợp dáng ${parsed.sample_card.match_score || 96}% · Tôn eo ${userProfile?.waistCm || 66}cm`,
@@ -1091,8 +1301,23 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
               };
             }
           } catch {
-            // Silently proceed to intelligent styling fallback
+            // If Google Search returned natural language markdown text instead of JSON, use it directly!
+            const fallback = generateServerStylistFallback(
+              lastUserQuery,
+              userProfile,
+              weatherContext,
+              occasionContext,
+              detectedIntent,
+              excludeOutfitId
+            );
+            replyText = rawText.replace(/\*\*/g, '');
+            finalIntent = detectedIntent;
+            sampleCard = detectedIntent === 'styling' ? fallback.sample_card : null;
           }
+        }
+
+        if (sources.length === 0 && finalIntent !== 'greeting') {
+          sources = defaultSources;
         }
       } catch {
         const fallback = generateServerStylistFallback(
@@ -1106,7 +1331,7 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
         replyText = fallback.reply;
         finalIntent = fallback.intent;
         sampleCard = fallback.sample_card;
-        sources = defaultSources;
+        sources = finalIntent !== 'greeting' ? defaultSources : [];
       }
     }
 
@@ -1122,7 +1347,7 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
       replyText = fallback.reply;
       finalIntent = fallback.intent;
       sampleCard = fallback.sample_card;
-      sources = defaultSources;
+      sources = finalIntent !== 'greeting' ? defaultSources : [];
     }
 
     res.json({
@@ -1130,6 +1355,8 @@ QUY TẮC PHÂN LOẠI Ý ĐỊNH VÀ TRẢ LỜI (BẮT BUỘC TUÂN THỦ NGHI
       intent: finalIntent,
       sample_card: sampleCard,
       sources,
+      modelUsed: selectedModel,
+      searchGroundingActive: enableGoogleSearch,
     });
   } catch (error) {
     console.warn('Handled stylist request with resilient engine:', error);

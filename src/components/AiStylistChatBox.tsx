@@ -17,6 +17,9 @@ import {
   Palette,
   Scissors,
   Brain,
+  Globe,
+  Zap,
+  Trash2,
 } from 'lucide-react';
 import {
   CURATED_OUTFITS,
@@ -186,6 +189,17 @@ const QUICK_REPLIES: QuickReply[] = [
     prompt: 'Gợi ý cho mình set đồ đi làm công sở thanh lịch, thoải mái dưới điều hòa văn phòng kèm phụ kiện nhé!',
     lighting: 'Indoor Cool LED',
   },
+  {
+    id: 'qr_dam_hot',
+    text: 'Gợi ý mẫu đầm tôn dáng',
+    prompt: 'Aura gợi ý cho mình mẫu đầm liền tôn vòng eo, hợp với số đo 3 vòng và phong cách của mình nhé!',
+    lighting: 'Warm Dim Light',
+  },
+  {
+    id: 'qr_google_trends',
+    text: '🔍 Xu hướng thời trang 2026 (Google Search)',
+    prompt: 'Aura hãy tra cứu Google Search xu hướng phối đồ và đầm hot nhất năm 2026 hợp với dáng người của mình nhé!',
+  },
 ];
 
 const LIGHTING_OPTIONS = [
@@ -316,6 +330,8 @@ export const AiStylistChatBox: React.FC<AiStylistChatBoxProps> = ({
   const [activeLighting, setActiveLighting] = useState<string>('Outdoor Daylight');
   const [showTuningDrawer, setShowTuningDrawer] = useState<boolean>(false);
   const [appliedOutfitId, setAppliedOutfitId] = useState<string | null>(null);
+  const [useSearchGrounding, setUseSearchGrounding] = useState<boolean>(true);
+  const [modelMode, setModelMode] = useState<'flash_search' | 'flash_lite'>('flash_search');
 
   const [weatherInfo, setWeatherInfo] = useState<{
     city: string;
@@ -514,11 +530,54 @@ export const AiStylistChatBox: React.FC<AiStylistChatBoxProps> = ({
     }
   }, [messages, isOpen, isLoading]);
 
+  const handleClearChatHistory = () => {
+    const freshWelcome: ChatMessage = {
+      id: `welcome_${Date.now()}`,
+      role: 'model',
+      text: `Dạ Aura đã làm mới cuộc trò chuyện cho ${profile.displayName} rồi nè! ✨\n\nHiện Aura đang bật chế độ ${
+        modelMode === 'flash_lite'
+          ? 'Phản hồi siêu tốc (Gemini 3.1 Flash-Lite)'
+          : useSearchGrounding
+          ? 'Gemini 3.8 Flash + Google Search Grounding trực tuyến'
+          : 'Gemini 3.8 Flash Chuẩn'
+      }.\n\nBạn muốn Aura tư vấn phối đồ, chọn đầm, hỏi đáp làm đẹp hay tra cứu xu hướng thời trang mới nhất trên Google Search thì nhắn cho Aura ngay nhé! 💕`,
+    };
+    setMessages([freshWelcome]);
+    saveChatHistory([freshWelcome]);
+  };
+
   // Detect which curated outfit matches Aura's recommendation and occasion
   const detectSuggestedOutfit = (replyText: string, queryText: string, excludeId?: string): OutfitItem => {
     const combined = `${replyText} ${queryText}`.toLowerCase();
     const pool = excludeId ? genderPool.filter((o) => o.id !== excludeId) : genderPool;
     const safePool = pool.length > 0 ? pool : genderPool;
+
+    // Prioritize Dresses (Đầm / Váy liền) when user or Aura mentions đầm / váy liền
+    if (
+      combined.includes('đầm') ||
+      combined.includes('váy liền') ||
+      combined.includes('coquette') ||
+      combined.includes('tiểu thư')
+    ) {
+      if (combined.includes('công sở') || combined.includes('đi làm') || combined.includes('blazer') || combined.includes('đi học')) {
+        const dressOffice = safePool.find((o) => o.id === 'outfit_dress_blazer_pleated_25');
+        if (dressOffice) return dressOffice;
+      }
+      if (combined.includes('tiệc') || combined.includes('ăn tối') || combined.includes('lụa') || combined.includes('đèn vàng')) {
+        const dressSilk = safePool.find((o) => o.id === 'outfit_dress_silk_midi_evening_24');
+        if (dressSilk) return dressSilk;
+      }
+      if (combined.includes('concert') || combined.includes('flash') || combined.includes('denim') || combined.includes('yếm')) {
+        const dressDenim = safePool.find((o) => o.id === 'outfit_dress_halter_denim_26');
+        if (dressDenim) return dressDenim;
+      }
+      const anyDress =
+        safePool.find((o) => o.id === 'outfit_dress_coquette_ribbon_23') ||
+        safePool.find((o) => o.id === 'outfit_dress_silk_midi_evening_24') ||
+        safePool.find((o) => o.id === 'outfit_dress_blazer_pleated_25') ||
+        safePool.find((o) => o.id === 'outfit_dress_halter_denim_26');
+      if (anyDress) return anyDress;
+    }
 
     if (
       combined.includes('thuyết trình') ||
@@ -772,6 +831,8 @@ export const AiStylistChatBox: React.FC<AiStylistChatBoxProps> = ({
           ? 'Nâu Khói Lạnh, Đỏ Cherry hoặc Nâu Trà Đen ánh tím'
           : 'Nâu Trà Sữa, Nâu Hạt Dẻ ấm, Nâu Hổ Phách hoặc Nâu Caramel';
         answer = `Dạ để màu tóc tôn da sáng bừng, quy tắc vàng là chọn theo Undertone da của bạn nè! Với tông da ${undertoneItem.label}, những gam màu lý tưởng nhất là ${recommendedColors}. Màu này vừa sang vừa giúp làm sáng bừng gương mặt dưới mọi ánh sáng nha! 💇‍♀️✨`;
+      } else if (q.includes('váy 1') || q.includes('áo 2') || q.includes('áo 3') || q.includes('mix') || q.includes('phối váy')) {
+        answer = `Dạ theo kho dữ liệu Mix & Match Học Đường & Coquette mà Aura đã được huấn luyện, bạn có thể áp dụng ngay các công thức phối chéo cực chuẩn sau nè: ✨\n\n• Công thức 1 (Váy 1 + Áo 2 / Áo 3): Chân váy xếp ly đen cạp cao (Váy 1) phối cùng Áo Blazer trắng kem cà vạt đen (Áo 2) hoặc Blazer be lửng cà vạt kẻ (Áo 3) — chuẩn Preppy Hàn Quốc tôn eo 1/3 - 2/3.\n• Công thức 2 (Váy 6 + Áo 5): Chân váy xếp ly đỏ tươi (Váy 6) phối cùng Áo Gile len xám sơ mi trắng cà vạt đỏ (Áo 5) — nổi bật, trẻ trung.\n• Công thức 3 (Váy 1 / Váy 8 + Áo đỏ trễ vai): Phối chân váy đen hoặc chân váy kẻ đỏ cùng Áo len đỏ trễ vai vạt chéo / Đầm nhung đỏ rượu cổ tim — quyến rũ cho buổi hẹn hò.\n• Giày & Túi đi kèm: Giày Mary Jane đế xuồng đính nơ hoặc Bốt da đen cổ cao, kết hợp Túi kẹp nách da bóng xích vàng nha! 👗👜`;
       } else {
         answer = `Dạ với câu hỏi này của ${profile.displayName}, trong thời trang nguyên tắc quan trọng nhất là sự cân bằng và phù hợp với vóc dáng của bạn. Khi chọn trang phục hay layout làm đẹp, bạn nên giữ một điểm nhấn chính (One Focal Point) để tổng thể hài hòa nhất nè! ✨\n\nNếu bạn đang chuẩn bị đồ cho một dịp cụ thể, hãy nhắn cho Aura biết hoàn cảnh để mình tư vấn trọn gói set đồ kèm kiểu tóc và makeup nha! 💕`;
       }
@@ -867,7 +928,21 @@ export const AiStylistChatBox: React.FC<AiStylistChatBoxProps> = ({
       lipColor = isCool ? 'Son tint bóng màu Hồng San Hô' : 'Son tint bóng màu Cam Đào Tươi Tắn';
     }
 
-    // 4. One Focal Point
+    // 4. Kiến thức phối chéo (Mix & Match), Giày, Túi & Tóc đã huấn luyện cho Aura AI
+    let trainedMixNote = '';
+    let trainedShoeBagNote = '';
+    if (q.includes('học') || q.includes('thuyết trình') || q.includes('công sở') || q.includes('preppy')) {
+      trainedMixNote = 'Gợi ý Mix & Match mở rộng: Bạn cũng có thể phối Chân váy xếp ly đen (Váy 1) cùng Áo Blazer trắng kem cà vạt đen (Áo 2) hoặc Blazer be lửng cà vạt kẻ (Áo 3); hay phối Chân váy đỏ (Váy 6) cùng Gile len xám sơ mi trắng (Áo 5).';
+      trainedShoeBagNote = 'Giày Mary Jane đế xuồng 5cm đen bóng/trắng kem phối tất cao cổ + Túi kẹp nách da bóng xích vàng hoặc Túi yên ngựa đen.';
+    } else if (q.includes('tiệc') || q.includes('ăn tối') || q.includes('hẹn hò') || q.includes('coquette') || q.includes('đầm')) {
+      trainedMixNote = 'Gợi ý Mix & Match mở rộng: Bạn có thể chọn Đầm nhung đỏ rượu cổ trái tim tay bồng, Đầm nhung đỏ viền ren trắng tiểu thư, hoặc phối Áo len đỏ trễ vai vạt chéo cùng Chân váy xếp ly đen (Váy 1).';
+      trainedShoeBagNote = 'Giày Mary Jane đỏ rượu viền ren đính nơ hoặc hồng phấn + Túi hộp chần bông dây xích vàng (dáng Chanel Vanity/Flap).';
+    } else {
+      trainedMixNote = 'Gợi ý Mix & Match mở rộng: Bạn có thể biến tấu Áo Blazer đen cropped (Áo 1) với Chân váy xếp ly đen (Váy 1) hoặc Sơ mi tay bồng cổ thủy thủ (Áo 7) với Chân váy caro hồng nâu (Váy 3).';
+      trainedShoeBagNote = 'Bốt da đen cổ lửng (Combat Boots) hoặc Bốt cao cổ ngang gối (Knee-high Boots) hack dáng + Túi kẹp nách da bóng khóa tam giác.';
+    }
+
+    // 5. One Focal Point
     const focalPointRule =
       lighting === 'Stage/Flash' || lighting === 'Warm Dim Light'
         ? 'Khi môi chọn tone màu đậm sắc nét, phần mắt hãy giữ đường nét tinh gọn, nhấn nhũ vừa phải để gương mặt thu hút mà không bị nặng nề.'
@@ -880,15 +955,16 @@ export const AiStylistChatBox: React.FC<AiStylistChatBoxProps> = ({
 
 ✨ Về dáng người & trang phục (${bodyInfo.nameVi.split('—')[0].trim()}):
 Aura gợi ý bạn diện ${outfit.name} (độ hợp dáng ${fit.fitScore}%). Áo: ${topRule} Phối cùng quần/váy: ${bottomRule} Thiết kế cạp cao này áp dụng chuẩn tỷ lệ 1/3 - 2/3 giúp đôi chân bạn trông thanh thoát và dài hơn.
+• ${trainedMixNote}
 
 💇‍♀️ Về kiểu tóc & mái che khuyết điểm:
-Hợp nhất với gương mặt ${faceShapeItem.label} là ${hairName} (${hairBangs}). Nếu bạn thích đổi màu tóc, gam ${isCool ? 'Nâu Khói Lạnh / Đỏ Cherry' : 'Nâu Trà Sữa / Nâu Hạt Dẻ'} sẽ nâng tone da sáng rạng rỡ.
+Hợp nhất với gương mặt ${faceShapeItem.label} là ${hairName} (${hairBangs}), có thể cài thêm băng đô trắng hoặc kẹp nơ lụa Coquette. Nếu bạn thích đổi màu tóc, gam ${isCool ? 'Nâu Khói Lạnh / Đỏ Cherry' : 'Nâu Trà Sữa / Nâu Hạt Dẻ'} sẽ nâng tone da sáng rạng rỡ.
 
 💄 Về layout makeup theo ánh sáng (${lighting}):
 Lớp nền: ${baseFinish}. Điểm nhấn mắt và má: ${eyeDesc}. ${blushDesc}. Màu son: ${lipColor}. Layout này xử lý ánh sáng ${lighting} cực tốt, giúp da luôn hồng hào và bền màu suốt cả buổi.
 
-💡 Về phụ kiện & cân bằng tổng thể:
-${focalPointRule} Bạn chỉ cần phối thêm ${outfit.stylingExtras?.accessories || 'túi kẹp nách nhỏ gọn và khuyên tai mảnh'} là hoàn thiện set đồ rồi nè.
+💡 Về giày, túi xách & cân bằng tổng thể:
+${focalPointRule} Phụ kiện chuẩn gu: ${trainedShoeBagNote}
 
 Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng màu Swatch. Bạn hãy bấm "Thử mẫu này lên Manocanh" để ngắm phom dáng 3D nha!`,
     };
@@ -950,6 +1026,8 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
           occasionContext: activeOccasion,
           lightingCondition: currentLighting,
           excludeOutfitId: excludeOutfitId || undefined,
+          useSearchGrounding: modelMode === 'flash_search' ? useSearchGrounding : false,
+          modelMode,
         }),
       });
 
@@ -1063,7 +1141,7 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex flex-col items-start">
+    <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex flex-col items-start max-w-[calc(100vw-1.5rem)]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -1072,7 +1150,7 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.92 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-3.5 w-[360px] sm:w-[480px] max-h-[680px] rounded-2xl bg-white border border-stone-300 shadow-[0_24px_64px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden text-[#18181B]"
+            className="mb-0 sm:mb-3.5 w-[calc(100vw-1.5rem)] sm:w-[430px] md:w-[480px] max-h-[calc(100dvh-1.5rem)] sm:max-h-[min(680px,calc(100dvh-6rem))] rounded-2xl bg-white border border-stone-300 shadow-[0_24px_64px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden text-[#18181B]"
           >
             {/* Header: CSKH Aura Live Badge + Weather */}
             <div className="px-4 py-3 bg-theme-primary text-white flex items-center justify-between">
@@ -1111,11 +1189,77 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
                 </button>
                 <button
                   type="button"
+                  onClick={handleClearChatHistory}
+                  className="p-1.5 rounded-lg hover:bg-white/15 text-white/90 transition-colors cursor-pointer"
+                  title="Làm mới lịch sử trò chuyện"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
                   className="p-1.5 rounded-lg hover:bg-white/15 text-white/90 transition-colors cursor-pointer"
                   title="Thu gọn cửa sổ chat"
                 >
                   <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Gemini AI Engine & Google Search Grounding Bar */}
+            <div className="px-3 py-1.5 bg-stone-900 text-white flex items-center justify-between gap-2 text-[11px] border-b border-stone-800">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModelMode('flash_search');
+                    setUseSearchGrounding((prev) => !prev);
+                  }}
+                  className={`px-2 py-0.5 rounded-full flex items-center gap-1 font-medium cursor-pointer transition-all border ${
+                    modelMode === 'flash_search' && useSearchGrounding
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50'
+                      : 'bg-white/10 text-stone-300 border-white/15 hover:bg-white/15'
+                  }`}
+                  title="Bật/tắt tra cứu dữ liệu thời gian thực bằng Google Search Grounding (gemini-3.8-flash)"
+                >
+                  <Globe className="w-3 h-3 shrink-0" />
+                  <span className="truncate">
+                    Google Search: {modelMode === 'flash_search' && useSearchGrounding ? 'BẬT' : 'TẮT'}
+                  </span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModelMode('flash_search');
+                    setUseSearchGrounding(true);
+                  }}
+                  className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-all ${
+                    modelMode === 'flash_search'
+                      ? 'bg-theme-primary text-white shadow-2xs'
+                      : 'bg-white/10 text-stone-300 hover:bg-white/20'
+                  }`}
+                  title="Gemini 3.8 Flash kết hợp Google Search Grounding"
+                >
+                  3.8 Flash + Search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModelMode('flash_lite');
+                    setUseSearchGrounding(false);
+                  }}
+                  className={`px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer transition-all ${
+                    modelMode === 'flash_lite'
+                      ? 'bg-amber-500 text-stone-950 shadow-2xs'
+                      : 'bg-white/10 text-stone-300 hover:bg-white/20'
+                  }`}
+                  title="Gemini 3.1 Flash-Lite phản hồi tốc độ cao"
+                >
+                  <Zap className="w-2.5 h-2.5" />
+                  <span>3.1 Lite Nhanh</span>
                 </button>
               </div>
             </div>
@@ -1281,7 +1425,7 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
             </div>
 
             {/* Messages Scrollable Thread */}
-            <div className="flex-1 p-3.5 space-y-3.5 overflow-y-auto bg-theme-canvas max-h-[360px]">
+            <div className="flex-1 p-3 sm:p-3.5 space-y-3.5 overflow-y-auto bg-theme-canvas min-h-[180px] max-h-[46dvh] sm:max-h-[360px]">
               {messages.map((msg) => {
                 return (
                   <div
@@ -1310,22 +1454,27 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
                     >
                       <FormattedChatMessage text={msg.text} role={msg.role} />
 
-                      {/* Grounding Sources */}
+                      {/* Grounding Sources (Google Search Live Data) */}
                       {msg.sources && msg.sources.length > 0 && (
-                        <div className="mt-2 pt-2 border-t border-stone-100 flex flex-wrap items-center gap-1.5">
-                          <span className="text-[10px] text-stone-400">Nguồn xu hướng:</span>
-                          {msg.sources.map((src, idx) => (
-                            <a
-                              key={idx}
-                              href={src.uri}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-stone-100 hover:bg-stone-200 text-[10px] text-stone-700"
-                            >
-                              <ExternalLink className="w-2.5 h-2.5" />
-                              <span className="truncate max-w-[120px]">{src.title}</span>
-                            </a>
-                          ))}
+                        <div className="mt-2.5 pt-2 border-t border-stone-100 space-y-1">
+                          <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-700">
+                            <Globe className="w-3 h-3 text-emerald-600 shrink-0" />
+                            <span>Nguồn xác thực từ Google Search:</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {msg.sources.map((src, idx) => (
+                              <a
+                                key={idx}
+                                href={src.uri}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 text-[10px] font-medium text-emerald-900 transition-colors"
+                              >
+                                <ExternalLink className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                                <span className="truncate max-w-[140px]">{src.title}</span>
+                              </a>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1599,25 +1748,27 @@ Aura đã gửi kèm Thẻ Mẫu Thử bên dưới với đầy đủ bảng m�
         )}
       </AnimatePresence>
 
-      {/* Circular Chat Trigger Button */}
+      {/* Circular Chat Trigger Button (Hidden on mobile when chat window is already open to maximize vertical chat height) */}
       <motion.button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.95 }}
-        className="w-14 h-14 rounded-full bg-theme-primary text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] border-2 border-white flex items-center justify-center cursor-pointer relative group"
+        className={`${
+          isOpen ? 'hidden sm:flex' : 'flex'
+        } w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-theme-primary text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] border-2 border-white items-center justify-center cursor-pointer relative group`}
         title="Mở CSKH Aura tư vấn phối đồ, makeup & tóc"
       >
         {isOpen ? (
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6" />
         ) : (
           <div className="flex flex-col items-center justify-center">
-            <MessageCircle className="w-6 h-6" />
+            <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full" />
           </div>
         )}
         {!isOpen && (
-          <span className="ml-3 left-full absolute px-3 py-1.5 rounded-lg bg-[#18181B] text-white text-xs font-medium whitespace-nowrap shadow-md pointer-events-none opacity-95 group-hover:opacity-100">
+          <span className="hidden sm:inline-block ml-3 left-full absolute px-3 py-1.5 rounded-lg bg-[#18181B] text-white text-xs font-medium whitespace-nowrap shadow-md pointer-events-none opacity-95 group-hover:opacity-100">
             Aura · CSKH Phối Đồ, Makeup & Tóc
           </span>
         )}

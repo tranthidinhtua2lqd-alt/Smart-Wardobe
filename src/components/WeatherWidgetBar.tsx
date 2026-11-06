@@ -326,9 +326,9 @@ export const WeatherWidgetBar: React.FC<WeatherWidgetBarProps> = ({
         </div>
 
         {/* Column 2: Live Weather Metrics (3.5 cols) */}
-        <div className="lg:col-span-4 flex items-center justify-between sm:justify-start gap-4 border-b lg:border-b-0 lg:border-r border-stone-200/80 pb-3 lg:pb-0 lg:px-2">
+        <div className="lg:col-span-4 flex flex-wrap items-center justify-between sm:justify-start gap-3 sm:gap-4 border-b lg:border-b-0 lg:border-r border-stone-200/80 pb-3 lg:pb-0 lg:px-2">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-amber-50/90 border border-amber-200/80 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50/90 border border-amber-200/80 flex items-center justify-center shrink-0">
               {renderWeatherIcon()}
             </div>
             <div>
@@ -346,24 +346,24 @@ export const WeatherWidgetBar: React.FC<WeatherWidgetBarProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-1 text-[11px] font-mono-tabular text-stone-600 pl-2 border-l border-stone-200/80">
+          <div className="flex flex-col gap-1 text-[11px] font-mono-tabular text-stone-600 pl-2.5 border-l border-stone-200/80">
             <span className="flex items-center gap-1">
-              <Thermometer className="w-3 h-3 text-stone-400" />
-              Cảm giác: <strong>{weather?.feelsLike ?? 32}°C</strong>
+              <Thermometer className="w-3 h-3 text-stone-400 shrink-0" />
+              <span>Cảm giác: <strong>{weather?.feelsLike ?? 32}°C</strong></span>
             </span>
             <span className="flex items-center gap-1">
-              <Droplets className="w-3 h-3 text-sky-500" />
-              Độ ẩm: <strong>{weather?.humidity ?? 70}%</strong>
+              <Droplets className="w-3 h-3 text-sky-500 shrink-0" />
+              <span>Độ ẩm: <strong>{weather?.humidity ?? 70}%</strong></span>
             </span>
             <span className="flex items-center gap-1">
-              <Wind className="w-3 h-3 text-stone-400" />
-              Gió: <strong>{weather?.windSpeed ?? 8} km/h</strong>
+              <Wind className="w-3 h-3 text-stone-400 shrink-0" />
+              <span>Gió: <strong>{weather?.windSpeed ?? 8} km/h</strong></span>
             </span>
           </div>
         </div>
 
         {/* Column 3: Weather-Based Outfit Suggestion (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col justify-between gap-2">
+        <div className="lg:col-span-4 flex flex-col justify-between gap-2 min-w-0">
           <div className="flex items-start gap-2">
             <Sparkles className="w-4 h-4 text-theme-primary shrink-0 mt-0.5" />
             <p className="text-xs text-stone-700 leading-relaxed">
@@ -376,7 +376,7 @@ export const WeatherWidgetBar: React.FC<WeatherWidgetBarProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectWeatherOutfit(weatherAdvice.recommendedOutfit)}
-                className="px-3 py-1.5 rounded-lg bg-theme-primary text-white text-xs font-semibold hover:opacity-95 transition-opacity cursor-pointer whitespace-nowrap"
+                className="max-w-full px-3 py-1.5 rounded-lg bg-theme-primary text-white text-xs font-semibold hover:opacity-95 transition-opacity cursor-pointer truncate"
               >
                 Chọn thử: {weatherAdvice.recommendedOutfit.name.split('&')[0].trim()}
               </button>

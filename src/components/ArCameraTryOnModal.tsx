@@ -423,17 +423,17 @@ export const ArCameraTryOnModal: React.FC<ArCameraTryOnModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-6xl rounded-2xl bg-[#FAF8F5] text-[#18181B] border border-stone-300 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 max-h-[92vh]"
+        className="relative w-full max-w-6xl rounded-2xl bg-[#FAF8F5] text-[#18181B] border border-stone-300 shadow-2xl overflow-y-auto lg:overflow-hidden grid grid-cols-1 lg:grid-cols-12 max-h-[92dvh]"
       >
         {/* Left 7 Cols: Garment Camera Capture / Photo Upload & Mannequin Preview */}
-        <div className="lg:col-span-7 relative bg-[#141416] min-h-[460px] sm:min-h-[540px] flex flex-col justify-between overflow-hidden">
+        <div className="lg:col-span-7 relative bg-[#141416] min-h-[360px] sm:min-h-[450px] lg:min-h-[540px] flex flex-col justify-between overflow-hidden">
           {/* Top Mode Bar inside Viewport */}
-          <div className="relative z-20 p-3.5 bg-black/75 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 bg-white/10 p-1 rounded-xl">
+          <div className="relative z-20 p-2.5 sm:p-3.5 bg-black/75 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-1 bg-white/10 p-1 rounded-xl">
               <button
                 type="button"
                 onClick={() => {
@@ -441,14 +441,14 @@ export const ArCameraTryOnModal: React.FC<ArCameraTryOnModalProps> = ({
                   setRawSourceDataUrl(null);
                   setInputTab('camera');
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
                   inputTab === 'camera'
                     ? 'bg-amber-500 text-stone-950'
                     : 'text-stone-300 hover:text-white'
                 }`}
               >
-                <Camera className="w-3.5 h-3.5" />
-                <span>1. Máy Ảnh Chụp Áo / Bộ Đồ</span>
+                <Camera className="w-3.5 h-3.5 shrink-0" />
+                <span>1. Máy Ảnh Chụp Đồ</span>
               </button>
 
               <button
@@ -457,18 +457,18 @@ export const ArCameraTryOnModal: React.FC<ArCameraTryOnModalProps> = ({
                   stopCamera();
                   setInputTab('upload');
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
                   inputTab === 'upload'
                     ? 'bg-amber-500 text-stone-950'
                     : 'text-stone-300 hover:text-white'
                 }`}
               >
-                <Upload className="w-3.5 h-3.5" />
-                <span>2. Tải Ảnh Áo Quần Từ Máy</span>
+                <Upload className="w-3.5 h-3.5 shrink-0" />
+                <span>2. Tải Ảnh Từ Máy</span>
               </button>
             </div>
 
-            {/* Garment Type Selector: Full Outfit vs Shirt/Top Only */}
+            {/* Garment Type Selector + Mobile Close Button */}
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
@@ -477,20 +477,29 @@ export const ArCameraTryOnModal: React.FC<ArCameraTryOnModalProps> = ({
                     garmentCaptureMode === 'full_outfit' ? 'top_only' : 'full_outfit'
                   )
                 }
-                className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-amber-200 text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-amber-200 text-[11px] sm:text-xs font-medium flex items-center gap-1.5 cursor-pointer"
               >
-                <Shirt className="w-3.5 h-3.5" />
-                <span>
+                <Shirt className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate max-w-[180px] sm:max-w-none">
                   {garmentCaptureMode === 'full_outfit'
-                    ? 'Chế độ: Chụp Cả Bộ Đồ / Đầm'
-                    : 'Chế độ: Chỉ Chụp Áo Lẻ (Phối quần trên Manocanh)'}
+                    ? 'Chế độ: Cả Bộ Đồ / Đầm'
+                    : 'Chế độ: Chỉ Chụp Áo Lẻ'}
                 </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="lg:hidden p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white cursor-pointer"
+                title="Đóng"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* Center Viewport: Either Live Camera / Upload Dropzone OR Captured Garment on Mannequin Preview */}
-          <div className="relative z-10 flex-1 flex items-center justify-center p-4 overflow-hidden">
+          <div className="relative z-10 flex-1 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
             {capturedImageUrl ? (
               /* PREVIEW: MANNEQUIN WEARING THE EXACT CAPTURED/UPLOADED GARMENT */
               <div className="w-full h-full flex flex-col sm:flex-row items-center justify-center gap-6 p-2">
@@ -750,7 +759,7 @@ export const ArCameraTryOnModal: React.FC<ArCameraTryOnModalProps> = ({
         </div>
 
         {/* Right 5 Cols: Aura Garment Analysis + Dress Mannequin Controls */}
-        <div className="lg:col-span-5 p-5 sm:p-6 flex flex-col justify-between bg-[#FAF8F5] overflow-y-auto">
+        <div className="lg:col-span-5 p-4 sm:p-6 flex flex-col justify-between bg-[#FAF8F5] lg:overflow-y-auto lg:max-h-[92dvh]">
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-3 pb-3 border-b border-stone-200">
               <div>

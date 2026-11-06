@@ -21,6 +21,7 @@ import {
   FACE_SHAPE_OPTIONS,
   UNDERTONE_OPTIONS,
 } from '../types';
+import { SizeConversionAssistant } from './SizeConversionAssistant';
 
 interface ProfileDrawerModalProps {
   isOpen: boolean;
@@ -171,32 +172,21 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[70] bg-black/65 backdrop-blur-[2px] flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+      className="fixed inset-0 z-[70] bg-black/65 backdrop-blur-[2px] flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto"
     >
-      {/* Floating High-Contrast Escape Button always visible on screen */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="fixed top-4 right-4 z-[80] px-3 py-2 rounded-full bg-white text-stone-900 border border-stone-300 shadow-xl hover:bg-stone-900 hover:text-white hover:scale-105 transition-all cursor-pointer flex items-center justify-center gap-1.5 text-xs font-bold"
-        title="Thoát hoặc Đóng (phím ESC)"
-      >
-        <X className="w-4 h-4" />
-        <span>Đóng (ESC)</span>
-      </button>
-
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl bg-theme-canvas text-[#18181B] rounded-2xl border border-stone-300 shadow-[0_28px_80px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] overflow-hidden"
+        className="relative w-full max-w-2xl bg-theme-canvas text-[#18181B] rounded-2xl border border-stone-300 shadow-[0_28px_80px_rgba(0,0,0,0.45)] flex flex-col max-h-[92dvh] overflow-hidden"
       >
         {/* Sticky Header with Prominent Close Button */}
-        <div className="sticky top-0 z-20 bg-theme-canvas px-6 py-4 border-b border-stone-200 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
+        <div className="sticky top-0 z-20 bg-theme-canvas px-4 sm:px-6 py-3.5 sm:py-4 border-b border-stone-200 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
             <User className="w-5 h-5 text-theme-primary shrink-0" />
-            <div>
-              <h2 className="font-serif-display text-xl sm:text-2xl font-bold text-stone-900 leading-tight">
+            <div className="min-w-0">
+              <h2 className="font-serif-display text-lg sm:text-2xl font-bold text-stone-900 leading-tight truncate">
                 Thông Tin Cá Nhân, Số Đo & Phong Cách
               </h2>
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[11px] text-stone-500 hidden sm:block">
                 Nhấn ra ngoài khung hoặc bấm nút Đóng (ESC) bất cứ lúc nào để thoát
               </p>
             </div>
@@ -205,8 +195,8 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-3.5 py-2 text-xs font-semibold text-stone-700 hover:text-white bg-white hover:bg-stone-900 border border-stone-300 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
-            title="Đóng cửa sổ thông tin cá nhân"
+            className="px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-semibold text-stone-700 hover:text-white bg-white hover:bg-stone-900 border border-stone-300 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
+            title="Đóng cửa sổ thông tin cá nhân (ESC)"
           >
             <X className="w-4 h-4" />
             <span>Đóng</span>
@@ -214,7 +204,7 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
           {savedBanner && (
             <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium flex items-center gap-2">
               <Check className="w-4 h-4 shrink-0" />
@@ -322,7 +312,7 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[270px] overflow-y-auto pr-1 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-[270px] overflow-y-auto pr-1 pt-1">
               {FASHION_STYLE_OPTIONS.map((option) => {
                 const isSelected = favoriteStyles.includes(option.id);
                 return (
@@ -406,10 +396,10 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-stone-100">
-              <div>
-                <label className="block text-xs font-medium text-theme-primary mb-1">
-                  Vòng 1 · Ngực (cm)
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-2 border-t border-stone-100">
+              <div className="flex flex-col justify-between">
+                <label className="block text-[11px] sm:text-xs font-medium text-theme-primary mb-1 truncate">
+                  V1 · Ngực (cm)
                 </label>
                 <input
                   type="number"
@@ -417,14 +407,14 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
                   max={160}
                   value={bustCm}
                   onChange={(e) => setBustCm(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm font-mono-tabular bg-theme-canvas border border-stone-300 rounded-lg"
+                  className="w-full px-2.5 sm:px-3 py-2 text-sm font-mono-tabular bg-theme-canvas border border-stone-300 rounded-lg"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-emerald-900 mb-1">
-                  Vòng 2 · Eo (cm)
+              <div className="flex flex-col justify-between">
+                <label className="block text-[11px] sm:text-xs font-medium text-emerald-900 mb-1 truncate">
+                  V2 · Eo (cm)
                 </label>
                 <input
                   type="number"
@@ -432,14 +422,14 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
                   max={150}
                   value={waistCm}
                   onChange={(e) => setWaistCm(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm font-mono-tabular bg-theme-canvas border border-stone-300 rounded-lg"
+                  className="w-full px-2.5 sm:px-3 py-2 text-sm font-mono-tabular bg-theme-canvas border border-stone-300 rounded-lg"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-900 mb-1">
-                  Vòng 3 · Hông (cm)
+              <div className="flex flex-col justify-between">
+                <label className="block text-[11px] sm:text-xs font-medium text-slate-900 mb-1 truncate">
+                  V3 · Hông (cm)
                 </label>
                 <input
                   type="number"
@@ -447,7 +437,7 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
                   max={165}
                   value={hipCm}
                   onChange={(e) => setHipCm(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm font-mono-tabular bg-theme-canvas border border-stone-300 rounded-lg"
+                  className="w-full px-2.5 sm:px-3 py-2 text-sm font-mono-tabular bg-theme-canvas border border-stone-300 rounded-lg"
                   required
                 />
               </div>
@@ -479,6 +469,16 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
                 </div>
               );
             })()}
+
+            {/* International Size Conversion Assistant (US, EU, UK, Asia VN/KR/JP) */}
+            <SizeConversionAssistant
+              heightCm={Number(heightCm) || 165}
+              weightKg={Number(weightKg) || 54}
+              bustCm={Number(bustCm) || 86}
+              waistCm={Number(waistCm) || 66}
+              hipCm={Number(hipCm) || 92}
+              genderStyle={genderStyle}
+            />
 
             {/* Dáng Mặt (Luật 2) & Tông Da (Luật 3) */}
             <div className="pt-3 border-t border-stone-100 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -538,7 +538,7 @@ export const ProfileDrawerModal: React.FC<ProfileDrawerModalProps> = ({
               </span>
             </div>
 
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
               {THEME_PALETTES.map((palette) => {
                 const isSelected = activeTheme.id === palette.id && customPrimaryColor === palette.primary;
                 return (

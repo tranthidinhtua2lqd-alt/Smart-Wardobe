@@ -28,6 +28,7 @@ import {
   Check,
   Brain,
   RotateCcw,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import {
@@ -53,6 +54,7 @@ import { ProfileDrawerModal } from './components/ProfileDrawerModal';
 import { AiStylistChatBox } from './components/AiStylistChatBox';
 import { StyleOnboardingModal } from './components/StyleOnboardingModal';
 import { WeatherWidgetBar } from './components/WeatherWidgetBar';
+import { OutfitComparisonView } from './components/OutfitComparisonView';
 
 type MainSection = 'suggestions' | 'mannequin' | 'history';
 
@@ -109,6 +111,30 @@ export default function App() {
   // Modals
   const [isArModalOpen, setIsArModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  // Side-by-Side Outfit Comparison State (up to 2 outfits)
+  const [compareOutfits, setCompareOutfits] = useState<OutfitItem[]>([]);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+
+  const handleToggleCompareOutfit = (outfit: OutfitItem) => {
+    setCompareOutfits((prev) => {
+      const exists = prev.some((item) => item.id === outfit.id);
+      if (exists) {
+        return prev.filter((item) => item.id !== outfit.id);
+      }
+      if (prev.length < 2) {
+        const next = [...prev, outfit];
+        if (next.length === 2) {
+          setIsCompareModalOpen(true);
+        }
+        return next;
+      }
+      // Replace the 2nd slot if 2 outfits are already selected
+      const replaced = [prev[0], outfit];
+      setIsCompareModalOpen(true);
+      return replaced;
+    });
+  };
 
   // User's Custom Photographed / Uploaded Garments
   const [customCapturedOutfits, setCustomCapturedOutfits] = useState<OutfitItem[]>([]);
@@ -191,7 +217,11 @@ export default function App() {
     const favs = updatedProfile.favoriteStyles || [];
     const bestMatch =
       genderOutfits.find((o) => o.styleTags.some((t) => favs.includes(t))) || genderOutfits[0];
-    if (bestMatch && !selectedOutfit.targetGenders.includes(updatedProfile.genderStyle)) {
+    if (
+      bestMatch &&
+      (!selectedOutfit.targetGenders.includes(updatedProfile.genderStyle) ||
+        (favs.length > 0 && !selectedOutfit.styleTags.some((t) => favs.includes(t))))
+    ) {
       setSelectedOutfit(bestMatch);
     }
 
@@ -364,15 +394,20 @@ export default function App() {
           setProfile(loggedInProfile);
           setIsCloudSynced(synced);
           setHasEnteredWardrobeSession(true);
-          // Match initial selectedOutfit to loggedInProfile gender
+          // Match initial selectedOutfit to loggedInProfile gender & chosen favoriteStyles
           const pool =
             loggedInProfile.genderStyle === 'neutral'
               ? CURATED_OUTFITS
               : CURATED_OUTFITS.filter((o) =>
                   o.targetGenders.includes(loggedInProfile.genderStyle)
                 );
-          if (pool[0]) {
-            setSelectedOutfit(pool[0]);
+          const favs = loggedInProfile.favoriteStyles || [];
+          const bestInitial =
+            (favs.length > 0
+              ? pool.find((o) => o.styleTags.some((t) => favs.includes(t)))
+              : pool[0]) || pool[0];
+          if (bestInitial) {
+            setSelectedOutfit(bestInitial);
           }
           // Trigger 2-step Gender & Fashion Style Onboarding if first time!
           if (!loggedInProfile.onboardingCompleted || !loggedInProfile.favoriteStyles?.length) {
@@ -384,21 +419,30 @@ export default function App() {
   }
 
   // Compute user's selected style labels
+  const userSelectedStyles = profile.favoriteStyles || [];
   const userSelectedStyleObjects = FASHION_STYLE_OPTIONS.filter((opt) =>
-    (profile.favoriteStyles || []).includes(opt.id)
+    userSelectedStyles.includes(opt.id)
   );
 
-  // Gender-appropriate outfit pool + any custom garments photographed/uploaded by the user
+  // Gender-appropriate outfit pool strictly filtered to ONLY the user's selected favoriteStyles
   const baseGenderPool =
     profile.genderStyle === 'neutral'
       ? CURATED_OUTFITS
       : CURATED_OUTFITS.filter((item) => item.targetGenders.includes(profile.genderStyle));
-  const genderOutfitsPool = [...customCapturedOutfits, ...baseGenderPool];
+
+  const strictUserStylePool =
+    userSelectedStyles.length > 0
+      ? baseGenderPool.filter((item) =>
+          item.styleTags.some((tag) => userSelectedStyles.includes(tag))
+        )
+      : baseGenderPool;
+
+  const genderOutfitsPool = [...customCapturedOutfits, ...strictUserStylePool];
 
   // Filter and sort outfits based on user's chosen styles, style tab, and category
   const categories = [
     'Theo phong cách đã chọn',
-    'Tất cả',
+    'Đầm & Váy liền',
     'Công sở thanh lịch',
     'Dạ tiệc lụa',
     'Dạo phố đương đại',
@@ -406,18 +450,26 @@ export default function App() {
   ];
 
   const filteredOutfits = (() => {
+    // Start strictly from genderOutfitsPool (which only contains outfits matching the user's chosen styles)
     let baseList = [...genderOutfitsPool];
 
-    // If user clicked a specific style tab pill, filter to that style
+    // If user clicked a specific style tab pill, filter strictly to that style
     if (styleTabFilter !== 'all') {
-      baseList = baseList.filter((item) => item.styleTags.includes(styleTabFilter));
+      baseList = baseList.filter(
+        (item) => item.isCustomCaptured || item.styleTags.includes(styleTabFilter)
+      );
     }
 
-    if (categoryFilter !== 'Theo phong cách đã chọn' && categoryFilter !== 'Tất cả') {
+    if (categoryFilter === 'Đầm & Váy liền') {
+      baseList = baseList.filter(
+        (item) =>
+          item.garmentCaptureMode === 'dress' || item.name.toLowerCase().includes('đầm')
+      );
+    } else if (categoryFilter !== 'Theo phong cách đã chọn') {
       baseList = baseList.filter((item) => item.category === categoryFilter);
     }
 
-    // AI Dynamic Learning Wardrobe Sync: Prioritize items based on chat history & memory
+    // AI Dynamic Learning Wardrobe Sync: Prioritize items based on chat history & memory (within user's chosen styles)
     if (learnedContext) {
       const dislikedColors = (learnedContext.dislikedColors || []).map((c) => c.toLowerCase());
       const preferredColors = (learnedContext.preferredColors || []).map((c) => c.toLowerCase());
@@ -467,14 +519,11 @@ export default function App() {
       });
     }
 
-    if (categoryFilter === 'Theo phong cách đã chọn') {
-      const userStyles = profile.favoriteStyles || [];
-      if (userStyles.length === 0) return baseList;
-
-      // Sort outfits by how many styleTags match the user's chosen favoriteStyles
+    if (userSelectedStyles.length > 0) {
+      // Sort outfits within the user's chosen styles by how many styleTags match their chosen favoriteStyles
       return baseList.sort((a, b) => {
-        const aMatches = a.styleTags.filter((t) => userStyles.includes(t)).length;
-        const bMatches = b.styleTags.filter((t) => userStyles.includes(t)).length;
+        const aMatches = a.styleTags.filter((t) => userSelectedStyles.includes(t)).length;
+        const bMatches = b.styleTags.filter((t) => userSelectedStyles.includes(t)).length;
         return bMatches - aMatches;
       });
     }
@@ -503,28 +552,28 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-theme-canvas text-[#18181B]">
-      {/* Strict 3-Zone Top Bar Contract with Circular Avatar on Top-Left */}
-      <header className="sticky top-0 z-40 bg-theme-canvas/95 backdrop-blur-xs border-b border-stone-200/90 px-6 lg:px-12 py-3.5 flex items-center justify-between gap-8">
+      {/* Strict 3-Zone Top Bar Contract with Circular Avatar on Top-Left (Responsive wrapping on mobile) */}
+      <header className="sticky top-0 z-40 bg-theme-canvas/95 backdrop-blur-xs border-b border-stone-200/90 px-3.5 sm:px-6 lg:px-10 xl:px-14 py-2.5 sm:py-3.5 flex flex-wrap md:flex-nowrap items-center justify-between gap-2.5 sm:gap-6">
         {/* Zone 1: Circular Avatar on Top-Left */}
         <button
           type="button"
           onClick={() => setIsProfileModalOpen(true)}
-          className="flex items-center gap-3 text-left group cursor-pointer whitespace-nowrap shrink-0"
+          className="flex items-center gap-2.5 sm:gap-3 text-left group cursor-pointer whitespace-nowrap shrink-0 order-1"
           title="Nhấn để xem thông tin người dùng, đổi Avatar, số đo cơ thể & màu chủ đạo"
         >
           <img
             src={profile.avatarUrl}
             alt={profile.displayName}
             referrerPolicy="no-referrer"
-            className="w-10 h-10 rounded-full object-cover border-2 border-theme-primary group-hover:scale-105 transition-transform"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-theme-primary group-hover:scale-105 transition-transform"
           />
-          <span className="font-serif-display text-xl font-bold tracking-tight text-stone-900">
+          <span className="font-serif-display text-lg sm:text-xl font-bold tracking-tight text-stone-900">
             SMART WARDROBE
           </span>
         </button>
 
         {/* Zone 2: Main Navigation Links */}
-        <nav className="flex items-center gap-6 text-sm font-medium text-stone-600 overflow-x-auto">
+        <nav className="w-full md:w-auto order-3 md:order-2 flex items-center justify-around md:justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-stone-600 overflow-x-auto no-scrollbar border-t md:border-t-0 border-stone-200/80 pt-2 md:pt-0">
           <button
             type="button"
             onClick={() => setActiveSection('suggestions')}
@@ -561,22 +610,23 @@ export default function App() {
         </nav>
 
         {/* Zone 3: Primary Action CTA (Capture / Upload Garment to Dress Mannequin) */}
-        <div className="shrink-0">
+        <div className="shrink-0 order-2 md:order-3">
           <button
             type="button"
             onClick={() => setIsArModalOpen(true)}
-            className="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-theme-primary rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-theme-primary rounded-lg transition-colors flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
           >
-            <Camera className="w-4 h-4" />
-            <span>Chụp / Tải Ảnh Áo Ướm Manocanh</span>
+            <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Chụp / Tải Ảnh Áo Ướm Manocanh</span>
+            <span className="sm:hidden">Chụp / Ướm Áo</span>
           </button>
         </div>
       </header>
 
       {/* Main Content Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-8">
+      <main className="flex-1 w-full max-w-[1600px] mx-auto px-3.5 sm:px-6 lg:px-10 xl:px-14 py-5 sm:py-8">
         {/* Personal Measurement, Selected Styles & Theme Color Bar Summary */}
-        <div className="mb-8 p-4 rounded-xl bg-white border border-stone-200/80 flex flex-wrap items-center justify-between gap-4 shadow-2xs">
+        <div className="mb-6 sm:mb-8 p-3.5 sm:p-4 rounded-xl bg-white border border-stone-200/80 flex flex-wrap items-center justify-between gap-4 shadow-2xs">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -664,19 +714,19 @@ export default function App() {
             <button
               type="button"
               onClick={() => setIsOnboardingOpen(true)}
-              className="px-3.5 py-2 text-xs font-medium text-stone-800 bg-white hover:bg-stone-100 border border-stone-300 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              className="px-3 py-2 text-xs font-medium text-stone-800 bg-white hover:bg-stone-100 border border-stone-300 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
-              <Sparkles className="w-3.5 h-3.5 text-theme-primary" />
+              <Sparkles className="w-3.5 h-3.5 text-theme-primary shrink-0" />
               <span>Chọn lại Giới tính & Phong cách</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsProfileModalOpen(true)}
-              className="px-3.5 py-2 text-xs font-medium text-stone-800 bg-theme-canvas hover:bg-stone-200/70 border border-stone-300 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              className="px-3 py-2 text-xs font-medium text-stone-800 bg-theme-canvas hover:bg-stone-200/70 border border-stone-300 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
-              <UserCheck className="w-3.5 h-3.5 text-theme-primary" />
-              <span>Đổi Avatar & Số đo 3 vòng</span>
+              <UserCheck className="w-3.5 h-3.5 text-theme-primary shrink-0" />
+              <span>Hồ sơ 3 vòng & Quy đổi Size Quốc Tế (US/EU/Asia)</span>
             </button>
           </div>
         </div>
@@ -694,9 +744,9 @@ export default function App() {
         {activeSection === 'suggestions' && (
           <div className="space-y-8">
             {/* Editorial Split Hero Banner */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-stone-200/90 rounded-2xl overflow-hidden shadow-xs">
-              <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between">
-                <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 items-stretch bg-white border border-stone-200/90 rounded-2xl overflow-hidden shadow-xs">
+              <div className="lg:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between">
+                <div className="space-y-3.5 sm:space-y-4">
                   <div className="text-xs text-stone-500 flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-theme-primary">
                       Gợi ý riêng cho {genderLabel}
@@ -711,49 +761,49 @@ export default function App() {
 
                   <h1
                     className="font-serif-display font-bold text-stone-900 leading-tight"
-                    style={{ fontSize: 'clamp(2.15rem, 3.4vw, 3.2rem)', textWrap: 'balance' }}
+                    style={{ fontSize: 'clamp(1.65rem, 3vw, 3.1rem)', textWrap: 'balance' }}
                   >
                     Tủ Đồ Gợi Ý Theo Sở Thích Phong Cách & Số Đo Cơ Thể Của Bạn
                   </h1>
 
-                  <p className="text-sm sm:text-base text-stone-600 leading-relaxed max-w-2xl">
+                  <p className="text-xs sm:text-sm md:text-base text-stone-600 leading-relaxed max-w-2xl">
                     Dựa trên lựa chọn phong cách cá nhân và chỉ số cơ thể ({profile.heightCm}cm · {profile.weightKg}kg · 3 vòng {profile.bustCm}-{profile.waistCm}-{profile.hipCm}cm), hệ thống đã tuyển chọn những bộ đồ mẫu khớp nhất để bạn thử trực tiếp qua Camera AR hoặc Manocanh.
                   </p>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-stone-200 flex flex-wrap items-center gap-3">
+                <div className="pt-5 mt-5 sm:pt-6 sm:mt-6 border-t border-stone-200 flex flex-wrap items-center gap-2.5 sm:gap-3">
                   <button
                     type="button"
                     onClick={() => {
                       setIsArModalOpen(true);
                     }}
-                    className="px-5 py-2.5 bg-theme-primary text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-xs"
+                    className="px-4 sm:px-5 py-2.5 bg-theme-primary text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-xs"
                   >
-                    <Camera className="w-4 h-4" />
+                    <Camera className="w-4 h-4 shrink-0" />
                     <span>Chụp / Tải Ảnh Áo Mặc Lên Manocanh</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setActiveSection('mannequin')}
-                    className="px-5 py-2.5 bg-white hover:bg-stone-100 text-stone-900 border border-stone-300 text-xs sm:text-sm font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                    className="px-4 sm:px-5 py-2.5 bg-white hover:bg-stone-100 text-stone-900 border border-stone-300 text-xs sm:text-sm font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap"
                   >
-                    <Sliders className="w-4 h-4 text-theme-primary" />
+                    <Sliders className="w-4 h-4 text-theme-primary shrink-0" />
                     <span>Vào Phòng Manocanh 3 Vòng</span>
                   </button>
                 </div>
               </div>
 
-              <div className="lg:col-span-5 relative min-h-[340px] bg-stone-100">
+              <div className="lg:col-span-5 relative min-h-[260px] sm:min-h-[340px] lg:min-h-[400px] bg-stone-100">
                 <img
                   src={selectedOutfit.imageUrl}
                   alt={selectedOutfit.name}
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 sm:p-6 text-white">
                   <p className="text-xs text-amber-300">Đang chọn thử · {selectedOutfit.category}</p>
-                  <p className="font-serif-display text-2xl font-bold mt-0.5">
+                  <p className="font-serif-display text-xl sm:text-2xl font-bold mt-0.5">
                     {selectedOutfit.name}
                   </p>
                 </div>
@@ -809,26 +859,51 @@ export default function App() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1 p-1 bg-stone-200/75 rounded-lg overflow-x-auto">
-                  {categories.map((cat) => (
+                <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
+                  {filteredOutfits.length >= 2 && (
                     <button
-                      key={cat}
                       type="button"
-                      onClick={() => setCategoryFilter(cat)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                        categoryFilter === cat
-                          ? 'bg-white text-stone-900 shadow-xs font-semibold'
-                          : 'text-stone-600 hover:text-stone-900'
-                      }`}
+                      onClick={() => {
+                        if (compareOutfits.length === 2) {
+                          setIsCompareModalOpen(true);
+                        } else {
+                          setCompareOutfits([filteredOutfits[0], filteredOutfits[1]]);
+                          setIsCompareModalOpen(true);
+                        }
+                      }}
+                      className="px-3.5 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs shrink-0"
+                      title="Chọn nhanh 2 bộ đầu tiên hoặc mở bảng so sánh song song"
                     >
-                      {cat}
+                      <ArrowLeftRight className="w-3.5 h-3.5 text-amber-300" />
+                      <span>
+                        {compareOutfits.length > 0
+                          ? `So sánh 2 bộ (${compareOutfits.length}/2)`
+                          : 'So sánh nhanh 2 bộ'}
+                      </span>
                     </button>
-                  ))}
+                  )}
+
+                  <div className="w-full sm:w-auto flex items-center gap-1 p-1 bg-stone-200/75 rounded-lg overflow-x-auto no-scrollbar">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setCategoryFilter(cat)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                          categoryFilter === cat
+                            ? 'bg-white text-stone-900 shadow-xs font-semibold'
+                            : 'text-stone-600 hover:text-stone-900'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* 12 Fashion Style Filter Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {/* Fashion Style Filter Pills (Only shows the user's chosen styles when selected) */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                 <button
                   type="button"
                   onClick={() => setStyleTabFilter('all')}
@@ -838,10 +913,13 @@ export default function App() {
                       : 'bg-white text-stone-700 border-stone-300 hover:border-stone-500'
                   }`}
                 >
-                  Tất cả phong cách ({genderOutfitsPool.length})
+                  Phong cách đã chọn ({genderOutfitsPool.length})
                 </button>
-                {FASHION_STYLE_OPTIONS.map((styleOpt) => {
-                  const isUserFav = (profile.favoriteStyles || []).includes(styleOpt.id);
+                {(userSelectedStyleObjects.length > 0
+                  ? userSelectedStyleObjects
+                  : FASHION_STYLE_OPTIONS
+                ).map((styleOpt) => {
+                  const isUserFav = userSelectedStyles.includes(styleOpt.id);
                   const isActiveTab = styleTabFilter === styleOpt.id;
                   const count = genderOutfitsPool.filter((o) =>
                     o.styleTags.includes(styleOpt.id)
@@ -871,8 +949,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Clean Outfit Suggestions Grid with Hover Scale & Drop Shadow */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            {/* Clean Outfit Suggestions Grid with Hover Scale & Drop Shadow (1/2/3/4 fluid columns) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 lg:gap-7">
               {filteredOutfits.map((outfit) => {
                 const fit = calculateOutfitFit(outfit, profile);
                 const matchedUserStyles = FASHION_STYLE_OPTIONS.filter(
@@ -884,10 +962,17 @@ export default function App() {
                   outfit.styleTags.includes(opt.id)
                 );
 
+                const compareIndex = compareOutfits.findIndex((item) => item.id === outfit.id);
+                const isSelectedForCompare = compareIndex !== -1;
+
                 return (
                   <article
                     key={outfit.id}
-                    className="group bg-white border border-stone-200/90 hover:border-theme-primary/50 rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1.5 hover:shadow-[0_22px_48px_-12px_rgba(24,24,27,0.22)]"
+                    className={`group bg-white border rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1.5 hover:shadow-[0_22px_48px_-12px_rgba(24,24,27,0.22)] ${
+                      isSelectedForCompare
+                        ? 'border-theme-primary ring-2 ring-theme-primary/25 shadow-md'
+                        : 'border-stone-200/90 hover:border-theme-primary/50'
+                    }`}
                   >
                     <div>
                       <div className="aspect-[3/4] w-full overflow-hidden bg-stone-100 relative">
@@ -898,11 +983,30 @@ export default function App() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
                         {matchedUserStyles.length > 0 && (
-                          <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-xs text-white px-3 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow-sm">
+                          <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-xs text-white px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow-sm">
                             <Check className="w-3.5 h-3.5 text-amber-300" />
                             <span>Hợp gu: {matchedUserStyles[0].title}</span>
                           </div>
                         )}
+
+                        {/* Top-Right Side-by-Side Compare Toggle Badge */}
+                        <button
+                          type="button"
+                          onClick={() => handleToggleCompareOutfit(outfit)}
+                          className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 shadow-sm transition-all cursor-pointer ${
+                            isSelectedForCompare
+                              ? 'bg-theme-primary text-white ring-2 ring-white'
+                              : 'bg-white/90 hover:bg-stone-900 text-stone-900 hover:text-white backdrop-blur-xs border border-stone-200/80'
+                          }`}
+                          title="Chọn bộ này để so sánh song song với bộ trang phục khác"
+                        >
+                          <ArrowLeftRight className="w-3 h-3" />
+                          <span>
+                            {isSelectedForCompare
+                              ? `So sánh #${compareIndex + 1}`
+                              : '+ So sánh'}
+                          </span>
+                        </button>
                       </div>
 
                       <div className="p-4 sm:p-5 space-y-2.5">
@@ -958,35 +1062,81 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="p-4 sm:p-5 pt-0 grid grid-cols-2 gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedOutfit(outfit);
-                          setActiveSection('mannequin');
-                        }}
-                        className="py-2.5 px-3 bg-theme-primary text-white text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Mặc Lên Manocanh</span>
-                      </button>
+                    <div className="p-4 sm:p-5 pt-0 space-y-2">
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedOutfit(outfit);
+                            setActiveSection('mannequin');
+                          }}
+                          className="py-2.5 px-3 bg-theme-primary text-white text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Mặc Lên Manocanh</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedOutfit(outfit);
+                            setIsArModalOpen(true);
+                          }}
+                          className="py-2.5 px-3 bg-theme-canvas hover:bg-stone-200/70 text-stone-900 border border-stone-300 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                        >
+                          <Camera className="w-3.5 h-3.5 text-theme-primary" />
+                          <span>Chụp Áo Của Bạn</span>
+                        </button>
+                      </div>
 
                       <button
                         type="button"
-                        onClick={() => {
-                          setSelectedOutfit(outfit);
-                          setIsArModalOpen(true);
-                        }}
-                        className="py-2.5 px-3 bg-theme-canvas hover:bg-stone-200/70 text-stone-900 border border-stone-300 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                        onClick={() => handleToggleCompareOutfit(outfit)}
+                        className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer border ${
+                          isSelectedForCompare
+                            ? 'bg-stone-900 text-white border-stone-900'
+                            : 'bg-white hover:bg-stone-100 text-stone-700 border-stone-200'
+                        }`}
                       >
-                        <Camera className="w-3.5 h-3.5 text-theme-primary" />
-                        <span>Chụp Áo Của Bạn</span>
+                        <ArrowLeftRight className="w-3.5 h-3.5 text-theme-primary" />
+                        <span>
+                          {isSelectedForCompare
+                            ? `Đã chọn so sánh (Vị trí #${compareIndex + 1}) · Bấm để bỏ`
+                            : 'Chọn để so sánh song song (Side-by-Side)'}
+                        </span>
                       </button>
                     </div>
                   </article>
                 );
               })}
             </div>
+
+            {/* Side-by-Side Outfit Comparison Tray & Modal */}
+            <OutfitComparisonView
+              compareOutfits={compareOutfits}
+              profile={profile}
+              isOpen={isCompareModalOpen}
+              onOpenChange={setIsCompareModalOpen}
+              onRemoveOutfit={(outfitId) =>
+                setCompareOutfits((prev) => prev.filter((o) => o.id !== outfitId))
+              }
+              onClearAll={() => {
+                setCompareOutfits([]);
+                setIsCompareModalOpen(false);
+              }}
+              onSwapOrder={() =>
+                setCompareOutfits((prev) => (prev.length === 2 ? [prev[1], prev[0]] : prev))
+              }
+              getOutfitAuraReason={getOutfitAuraReason}
+              onTryOnMannequin={(outfit) => {
+                setSelectedOutfit(outfit);
+                setActiveSection('mannequin');
+              }}
+              onTryOnAr={(outfit) => {
+                setSelectedOutfit(outfit);
+                setIsArModalOpen(true);
+              }}
+            />
           </div>
         )}
 
@@ -1082,7 +1232,7 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
                 {historyItems.map((item) => {
                   const matchedOutfit =
                     CURATED_OUTFITS.find((o) => o.id === item.outfitId) || CURATED_OUTFITS[0];
@@ -1181,7 +1331,7 @@ export default function App() {
       </main>
 
       {/* Clean Footer */}
-      <footer className="mt-16 border-t border-stone-200/90 bg-white px-6 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+      <footer className="mt-12 sm:mt-16 border-t border-stone-200/90 bg-white px-4 sm:px-6 lg:px-10 xl:px-14 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500 text-center sm:text-left">
         <span>© 2026 Smart Wardrobe · AI Trợ lý Phối đồ Aura</span>
         <span>Google Firebase Cloud Sync</span>
       </footer>

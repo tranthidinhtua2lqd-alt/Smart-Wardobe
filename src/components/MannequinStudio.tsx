@@ -131,19 +131,19 @@ export const MannequinStudio: React.FC<MannequinStudioProps> = ({
   const isTopOnly = selectedOutfit.garmentCaptureMode === 'top_only';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-start">
       {/* Left Column: Interactive Parametric Body Mannequin Wearing the Exact Selected/Captured Outfit */}
-      <div className="lg:col-span-7 bg-white border border-stone-200/90 rounded-2xl p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-stone-200">
+      <div className="lg:col-span-7 bg-white border border-stone-200/90 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-5 border-b border-stone-200">
           <div>
-            <h2 className="font-serif-display text-2xl sm:text-3xl font-semibold text-stone-900">
+            <h2 className="font-serif-display text-xl sm:text-2xl lg:text-3xl font-semibold text-stone-900">
               Manocanh Mặc Thử Trực Tiếp Theo Số Đo 3 Vòng
             </h2>
             <p className="text-xs text-stone-500 mt-1">
               Manocanh tự động mặc y hệt bộ đồ bạn chọn hoặc chụp ảnh vào, co giãn theo Chiều cao, Cân nặng và 3 vòng của {profile.displayName}
             </p>
           </div>
-          <div className="text-right font-mono-tabular text-xs text-stone-600">
+          <div className="text-left sm:text-right font-mono-tabular text-xs text-stone-600">
             <span>Size khuyến nghị: </span>
             <strong className="text-sm text-stone-900 px-2 py-0.5 bg-stone-100 rounded">
               {fitResult.recommendedSize}
@@ -159,18 +159,18 @@ export const MannequinStudio: React.FC<MannequinStudioProps> = ({
           <button
             type="button"
             onClick={() => onSwitchToAr(selectedOutfit)}
-            className="px-4 py-2 rounded-xl bg-theme-primary text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs"
+            className="w-full sm:w-auto justify-center px-3.5 sm:px-4 py-2 rounded-xl bg-theme-primary text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs"
           >
-            <Camera className="w-4 h-4" />
-            <span>Chụp / Tải Ảnh Áo Quần Mới Để Mặc Lên Manocanh</span>
+            <Camera className="w-4 h-4 shrink-0" />
+            <span className="truncate">Chụp / Tải Ảnh Áo Quần Mới Để Mặc Lên Manocanh</span>
           </button>
 
           <button
             type="button"
             onClick={() => setWearRealPhotoOnMannequin(!wearRealPhotoOnMannequin)}
-            className="px-3 py-1.5 rounded-xl border border-stone-300 bg-[#FAF8F5] hover:bg-stone-200/70 text-xs font-medium text-stone-800 flex items-center gap-1.5 cursor-pointer"
+            className="w-full sm:w-auto justify-center px-3 py-1.5 rounded-xl border border-stone-300 bg-[#FAF8F5] hover:bg-stone-200/70 text-xs font-medium text-stone-800 flex items-center gap-1.5 cursor-pointer"
           >
-            <Eye className="w-3.5 h-3.5 text-theme-primary" />
+            <Eye className="w-3.5 h-3.5 text-theme-primary shrink-0" />
             <span>
               {wearRealPhotoOnMannequin
                 ? 'Đang bật: Mặc ảnh thật lên Manocanh'
@@ -180,17 +180,17 @@ export const MannequinStudio: React.FC<MannequinStudioProps> = ({
         </div>
 
         {/* Mannequin Canvas Split: Parametric Silhouette Wearing Real Garment + Fit Details */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-center">
           {/* Interactive Parametric SVG Mannequin Wearing the Exact Outfit Image */}
-          <div className="md:col-span-7 relative bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-4 flex flex-col items-center justify-between min-h-[490px] overflow-hidden">
+          <div className="md:col-span-7 relative bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-3 sm:p-4 flex flex-col items-center justify-between min-h-[430px] sm:min-h-[490px] overflow-hidden">
             {/* Measurement Callout Lines */}
-            <div className="w-full flex items-center justify-between text-[11px] font-mono-tabular text-stone-500 mb-1 px-2">
+            <div className="w-full flex items-center justify-between text-[11px] font-mono-tabular text-stone-500 mb-1 px-1 sm:px-2">
               <span>CAO: {heightCm} cm</span>
               <span>NẶNG: {weightKg} kg</span>
               <span>BMI: {bmi}</span>
             </div>
 
-            <div className="relative flex items-center justify-center w-full max-w-[260px] h-[380px]">
+            <div className="relative flex items-center justify-center w-full max-w-[240px] sm:max-w-[260px] h-[340px] sm:h-[380px]">
               <svg
                 viewBox="0 0 240 420"
                 className="w-full h-full overflow-visible transition-transform duration-300"

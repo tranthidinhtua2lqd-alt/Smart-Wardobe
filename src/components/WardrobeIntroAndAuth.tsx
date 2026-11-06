@@ -198,7 +198,7 @@ const RealisticGarmentSVG: React.FC<{ item: BurstingClothingItem }> = ({ item })
         src={item.imageUrl}
         alt=""
         draggable={false}
-        className="w-32 h-36 sm:w-40 sm:h-44 object-contain select-none pointer-events-none"
+        className="w-20 h-24 sm:w-32 sm:h-36 lg:w-40 lg:h-44 object-contain select-none pointer-events-none"
       />
     </div>
   );
@@ -231,6 +231,27 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
   const [statusMessage, setStatusMessage] = useState<{ type: 'info' | 'success' | 'error'; text: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSecurityGuide, setShowSecurityGuide] = useState(true);
+  const [burstFactor, setBurstFactor] = useState<number>(1);
+
+  useEffect(() => {
+    const updateViewportFactor = () => {
+      const w = window.innerWidth;
+      if (w < 480) {
+        setBurstFactor(0.32);
+      } else if (w < 768) {
+        setBurstFactor(0.5);
+      } else if (w < 1024) {
+        setBurstFactor(0.7);
+      } else if (w < 1280) {
+        setBurstFactor(0.85);
+      } else {
+        setBurstFactor(1);
+      }
+    };
+    updateViewportFactor();
+    window.addEventListener('resize', updateViewportFactor);
+    return () => window.removeEventListener('resize', updateViewportFactor);
+  }, []);
 
   const handleOpenWardrobe = () => {
     if (stage !== 'closed') return;
@@ -637,7 +658,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#161412] text-[#FAF8F5] flex flex-col justify-between select-none">
+    <div className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-auto bg-[#161412] text-[#FAF8F5] flex flex-col justify-between select-none">
       {/* Subtle Ambient Warm Spotlight */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -648,9 +669,9 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
       />
 
       {/* Minimal Header */}
-      <header className="relative z-30 flex items-center justify-between px-8 py-5 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <span className="font-serif-display text-2xl font-bold tracking-wider text-[#FAF8F5]">
+      <header className="relative z-30 flex items-center justify-between px-4 sm:px-8 lg:px-12 py-3.5 sm:py-5 border-b border-white/10 gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="font-serif-display text-lg sm:text-2xl font-bold tracking-wider text-[#FAF8F5] truncate">
             SMART WARDROBE
           </span>
         </div>
@@ -659,7 +680,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
           <button
             type="button"
             onClick={() => setStage('auth_ready')}
-            className="px-4 py-2 text-xs font-medium text-stone-200 border border-white/15 rounded-lg hover:bg-white/10 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium text-stone-200 border border-white/15 rounded-lg hover:bg-white/10 transition-colors cursor-pointer whitespace-nowrap shrink-0"
           >
             Bỏ qua hiệu ứng mở tủ
           </button>
@@ -667,7 +688,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
       </header>
 
       {/* Main Interactive Wardrobe Stage */}
-      <main className="relative z-20 flex-1 flex items-center justify-center px-4 py-8">
+      <main className="relative z-20 flex-1 flex items-center justify-center px-3 sm:px-6 lg:px-10 py-4 sm:py-8">
         {/* Bursting Clothes Layer: Hidden when closed, spreads out around wardrobe when bursting, and disappears completely once Login/Register appears */}
         <AnimatePresence>
           {stage !== 'auth_ready' && (
@@ -676,7 +697,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
               initial={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 1.15 }}
               transition={{ duration: 0.35, ease: 'easeOut' }}
-              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
             >
               {BURSTING_CLOTHES.map((garment, idx) => {
                 const isClosed = stage === 'closed';
@@ -686,8 +707,8 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                     initial={{
                       opacity: 0,
                       scale: 0.45,
-                      x: garment.packedX,
-                      y: garment.packedY,
+                      x: garment.packedX * burstFactor,
+                      y: garment.packedY * burstFactor,
                       rotate: garment.packedRotate,
                     }}
                     animate={
@@ -696,16 +717,16 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                             // Hidden strictly inside the closed cabinet behind the doors
                             opacity: 0,
                             scale: 0.45,
-                            x: garment.packedX,
-                            y: garment.packedY,
+                            x: garment.packedX * burstFactor,
+                            y: garment.packedY * burstFactor,
                             rotate: garment.packedRotate,
                           }
                         : {
-                            // Bursting out from inside the cabinet in a balanced, moderate layout around the doors
+                            // Bursting out from inside the cabinet in a balanced, responsive layout around the doors
                             opacity: 1,
-                            scale: garment.scale,
-                            x: garment.burstX,
-                            y: garment.burstY,
+                            scale: garment.scale * Math.max(0.65, burstFactor),
+                            x: garment.burstX * burstFactor,
+                            y: garment.burstY * Math.max(0.6, burstFactor),
                             rotate: garment.burstRotate,
                           }
                     }
@@ -737,11 +758,11 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
               }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.45 }}
-              className="relative z-25 w-full max-w-[350px] sm:max-w-[405px] perspective-1600 flex flex-col items-center justify-center"
+              className="relative z-25 w-[min(88vw,350px)] sm:w-[390px] md:w-[415px] perspective-1600 flex flex-col items-center justify-center"
             >
               {/* 1. 3D Perspective Trapezoid Top Roof / Crown */}
               <div
-                className="w-[98%] h-5 sm:h-6 -mb-1 relative z-20"
+                className="w-[98%] h-4 sm:h-6 -mb-1 relative z-20"
                 style={{
                   clipPath: 'polygon(7% 0%, 93% 0%, 100% 100%, 0% 100%)',
                   background:
@@ -756,7 +777,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
 
               {/* 2. Main Outer Honey-Oak Wooden Cabinet Body */}
               <div
-                className="relative w-full rounded-[18px] p-3.5 sm:p-4 flex flex-col gap-3 border-[3px] border-[#6E3F17] preserve-3d"
+                className="relative w-full rounded-[18px] p-3 sm:p-4 flex flex-col gap-2.5 sm:gap-3 border-[3px] border-[#6E3F17] preserve-3d"
                 style={{
                   background:
                     'linear-gradient(180deg, #BD8248 0%, #AA6F37 52%, #925B28 100%)',
@@ -779,7 +800,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                 </svg>
 
                 {/* 2A. UPPER SECTION: Recessed Double-Door Cavity (Clothes sit inside here behind doors) */}
-                <div className="relative w-full h-[315px] sm:h-[360px] rounded-[12px] bg-[#211309] border-[3px] border-[#5E3411] shadow-[inset_0_10px_28px_rgba(0,0,0,0.85)] flex preserve-3d">
+                <div className="relative w-full h-[clamp(245px,42dvh,360px)] rounded-[12px] bg-[#211309] border-[3px] border-[#5E3411] shadow-[inset_0_10px_28px_rgba(0,0,0,0.85)] flex preserve-3d">
                   {/* Interior Back Wall, Hanging Rod & Shelves (Visible when doors swing open) */}
                   <div className="absolute inset-0 z-10 rounded-[9px] overflow-hidden flex flex-col justify-between p-5 bg-gradient-to-b from-[#3A2210] via-[#26160A] to-[#160C05]">
                     {/* Wooden Hanging Rod */}
@@ -794,18 +815,19 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
 
                   {/* Left Tall Honey-Oak Wardrobe Door */}
                   <motion.div
+                    initial={false}
                     animate={
                       stage === 'bursting'
                         ? { rotateY: -135 }
-                        : { rotateY: [0, -2.2, 0, -1.2, 0] }
+                        : { rotateY: 0 }
                     }
-                    transition={
-                      stage === 'bursting'
-                        ? { duration: 0.82, ease: [0.16, 1, 0.3, 1] }
-                        : { duration: 2.3, repeat: Infinity, ease: 'easeInOut' }
-                    }
+                    transition={{
+                      duration: 0.82,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
                     style={{
                       transformOrigin: 'left center',
+                      backfaceVisibility: 'hidden',
                       background:
                         'linear-gradient(180deg, #C78C52 0%, #B4783E 52%, #9E642D 100%)',
                       boxShadow:
@@ -852,18 +874,19 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
 
                   {/* Right Tall Honey-Oak Wardrobe Door */}
                   <motion.div
+                    initial={false}
                     animate={
                       stage === 'bursting'
                         ? { rotateY: 135 }
-                        : { rotateY: [0, 2.2, 0, 1.2, 0] }
+                        : { rotateY: 0 }
                     }
-                    transition={
-                      stage === 'bursting'
-                        ? { duration: 0.82, ease: [0.16, 1, 0.3, 1] }
-                        : { duration: 2.3, repeat: Infinity, ease: 'easeInOut' }
-                    }
+                    transition={{
+                      duration: 0.82,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
                     style={{
                       transformOrigin: 'right center',
+                      backfaceVisibility: 'hidden',
                       background:
                         'linear-gradient(180deg, #C78C52 0%, #B4783E 52%, #9E642D 100%)',
                       boxShadow:
@@ -908,25 +931,26 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                     />
                   </motion.div>
 
-                  {/* Center Interactive Trigger Button when Closed */}
+                  {/* Center Interactive Trigger Button when Closed (Always steadily visible in front of doors) */}
                   {stage === 'closed' && (
-                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none">
-                      <motion.button
+                    <div
+                      className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+                      style={{ transform: 'translateZ(60px)' }}
+                    >
+                      <button
                         type="button"
                         onClick={handleOpenWardrobe}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.96 }}
-                        className="pointer-events-auto px-5 py-3 rounded-xl bg-[#FAF8F5] text-[#18181B] font-semibold text-xs sm:text-sm shadow-[0_10px_35px_rgba(0,0,0,0.65)] flex items-center gap-2 cursor-pointer border-2 border-amber-500"
+                        className="pointer-events-auto px-5 py-3 rounded-xl bg-[#FAF8F5] hover:bg-amber-50 active:scale-95 text-[#18181B] font-semibold text-xs sm:text-sm shadow-[0_10px_35px_rgba(0,0,0,0.65)] flex items-center gap-2 cursor-pointer border-2 border-amber-500 transition-colors"
                       >
                         <DoorOpen className="w-4 h-4 text-amber-700" />
                         <span>Mở Tủ Đồ</span>
-                      </motion.button>
+                      </button>
                     </div>
                   )}
                 </div>
 
                 {/* 2B. LOWER SECTION: Two Stacked Horizontal Full-Width Wooden Drawers (Matching Reference Image) */}
-                <div className="w-full h-[126px] sm:h-[142px] rounded-[11px] bg-[#5B3210] p-[3px] flex flex-col gap-[4px] border-2 border-[#5E3411] shadow-inner">
+                <div className="w-full h-[clamp(96px,15dvh,142px)] rounded-[11px] bg-[#5B3210] p-[3px] flex flex-col gap-[4px] border-2 border-[#5E3411] shadow-inner">
                   {[0, 1].map((drawerIdx) => (
                     <div
                       key={drawerIdx}
@@ -994,25 +1018,25 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
               initial={{ opacity: 0, y: 24, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="relative z-30 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden border border-white/15 bg-theme-canvas text-[#18181B] shadow-[0_32px_96px_rgba(0,0,0,0.75)]"
+              className="relative z-30 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden border border-white/15 bg-theme-canvas text-[#18181B] shadow-[0_32px_96px_rgba(0,0,0,0.75)]"
             >
               {/* Left Column: Security Architecture & OTP Verification Notes */}
-              <div className="lg:col-span-5 bg-theme-surface p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200/80">
+              <div className="lg:col-span-5 bg-theme-surface p-4 sm:p-6 lg:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200/80">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-theme-primary">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-theme-primary">
                       Cổng Xác Thực Bảo Mật
                     </span>
                     <button
                       type="button"
                       onClick={() => setStage('closed')}
-                      className="text-xs font-medium text-stone-700 hover:text-stone-900 underline cursor-pointer"
+                      className="text-xs font-medium text-stone-700 hover:text-stone-900 underline cursor-pointer shrink-0"
                     >
                       Đóng tủ & Xem lại
                     </button>
                   </div>
 
-                  <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900 mt-2 leading-tight">
+                  <h1 className="font-serif-display text-2xl sm:text-3xl lg:text-4xl font-bold text-stone-900 mt-2 leading-tight">
                     Không Gian Thử Đồ Cá Nhân Hóa
                   </h1>
                   <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
@@ -1020,23 +1044,23 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                   </p>
 
                   {/* Detailed Security & Verification Steps Box */}
-                  <div className="mt-5 rounded-xl bg-white/95 border border-stone-200/90 p-4 shadow-2xs">
+                  <div className="mt-4 sm:mt-5 rounded-xl bg-white/95 border border-stone-200/90 p-3.5 sm:p-4 shadow-2xs">
                     <button
                       type="button"
                       onClick={() => setShowSecurityGuide(!showSecurityGuide)}
-                      className="w-full flex items-center justify-between text-left font-semibold text-xs text-stone-900 cursor-pointer"
+                      className="w-full flex items-center justify-between gap-2 text-left font-semibold text-xs text-stone-900 cursor-pointer"
                     >
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-2 min-w-0">
                         <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                        <span>Quy trình xác thực bảo mật 3 bước (Ghi chú hệ thống)</span>
+                        <span className="truncate sm:whitespace-normal">Quy trình xác thực bảo mật 3 bước</span>
                       </span>
-                      <span className="text-[11px] text-theme-primary underline">
+                      <span className="text-[11px] text-theme-primary underline shrink-0">
                         {showSecurityGuide ? 'Thu gọn' : 'Xem chi tiết'}
                       </span>
                     </button>
 
                     {showSecurityGuide && (
-                      <ol className="mt-3 space-y-2.5 text-xs text-stone-600 leading-relaxed">
+                      <ol className="mt-3 space-y-2 text-xs text-stone-600 leading-relaxed">
                         <li>
                           <strong className="text-stone-900">Bước 1 · Định danh Gmail / SĐT:</strong> Hệ thống kiểm tra định dạng hợp lệ của địa chỉ Gmail hoặc Số điện thoại người dùng nhập vào để chống giả mạo tài khoản.
                         </li>
@@ -1044,7 +1068,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                           <strong className="text-stone-900">Bước 2 · Cấp & Xác thực mã OTP 6 số:</strong> Gửi mã OTP một lần (One-Time Password) về kênh liên hệ đã đăng ký. Người dùng nhập đúng mã OTP để chứng minh quyền sở hữu trước khi kích hoạt.
                         </li>
                         <li>
-                          <strong className="text-stone-900">Bước 3 · Khởi tạo mật khẩu băm SHA-256 & Lưu Cloud:</strong> Mật khẩu được băm bảo mật (SHA-256) và cô lập thông tin nhạy cảm (PII) trên Firestore. Từ lần đăng nhập sau, hệ thống tự động nhớ Gmail/SĐT để bạn chỉ cần nhập mật khẩu vào thẳng tủ đồ.
+                          <strong className="text-stone-900">Bước 3 · Khởi tạo mật khẩu bằng SHA-256 & Lưu Cloud:</strong> Mật khẩu được băm bảo mật (SHA-256) và cô lập thông tin nhạy cảm (PII) trên Firestore. Từ lần đăng nhập sau, hệ thống tự động nhớ Gmail/SĐT để bạn chỉ cần nhập mật khẩu vào thẳng tủ đồ.
                         </li>
                       </ol>
                     )}
@@ -1053,17 +1077,17 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
               </div>
 
               {/* Right Column: Interactive Login / Registration Form */}
-              <div className="lg:col-span-7 p-6 sm:p-8 bg-theme-canvas flex flex-col justify-between">
+              <div className="lg:col-span-7 p-4 sm:p-6 lg:p-8 bg-theme-canvas flex flex-col justify-between">
                 <div>
                   {/* Segmented Mode Switch: Đăng nhập vs Đăng ký */}
-                  <div className="flex items-center gap-1 p-1 bg-stone-200/80 rounded-lg mb-6">
+                  <div className="grid grid-cols-2 gap-1 p-1 bg-stone-200/80 rounded-lg mb-5 sm:mb-6">
                     <button
                       type="button"
                       onClick={() => {
                         setAuthTab('login');
                         setStatusMessage(null);
                       }}
-                      className={`flex-1 py-2 px-4 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap ${
+                      className={`py-2 px-2 sm:px-4 text-[11px] sm:text-xs font-semibold rounded-md transition-colors cursor-pointer text-center leading-tight ${
                         authTab === 'login'
                           ? 'bg-white text-stone-900 shadow-sm'
                           : 'text-stone-600 hover:text-stone-900'
@@ -1078,7 +1102,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                         setRegStep(1);
                         setStatusMessage(null);
                       }}
-                      className={`flex-1 py-2 px-4 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap ${
+                      className={`py-2 px-2 sm:px-4 text-[11px] sm:text-xs font-semibold rounded-md transition-colors cursor-pointer text-center leading-tight ${
                         authTab === 'register'
                           ? 'bg-white text-stone-900 shadow-sm'
                           : 'text-stone-600 hover:text-stone-900'
