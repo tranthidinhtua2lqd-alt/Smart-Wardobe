@@ -18,6 +18,11 @@ import { signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../firebase';
 import { DEFAULT_AVATARS, UserProfile } from '../types';
+import {
+  DEMO_USER_PROFILE,
+  INITIAL_MOCK_ACCOUNTS,
+  initializeLocalStorageWithMockData,
+} from '../data/mockData';
 
 // EmailJS Configuration (có sẵn giá trị mặc định để chạy ngay khi tải từ GitHub về mà không cần tạo file .env)
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_zpohl0g';
@@ -236,6 +241,7 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
   };
 
   useEffect(() => {
+    initializeLocalStorageWithMockData();
     const savedContact = localStorage.getItem('atelier_aura_last_contact');
     if (savedContact) {
       setContactInput(savedContact);
@@ -522,13 +528,16 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
     try {
       const pwdHash = await hashPassword(passwordInput);
       const localAccountsRaw = localStorage.getItem('atelier_aura_accounts') || '{}';
-      const localAccounts = JSON.parse(localAccountsRaw);
+      const localAccounts = {
+        ...INITIAL_MOCK_ACCOUNTS,
+        ...JSON.parse(localAccountsRaw),
+      };
       const record = localAccounts[trimmedContact];
 
       if (!record || record.passwordHash !== pwdHash) {
         setStatusMessage({
           type: 'error',
-          text: 'Thông tin Gmail/SĐT hoặc mật khẩu chưa đúng, hoặc bạn chưa đăng ký tài khoản này. Hãy chuyển sang tab Đăng ký hoặc chọn Đăng nhập Google.',
+          text: 'Thông tin Gmail/SĐT hoặc mật khẩu chưa đúng. Bạn có thể dùng tài khoản mẫu có sẵn (demo@gmail.com / Mật khẩu: 123456) hoặc chuyển sang tab Đăng ký.',
         });
         setIsSubmitting(false);
         return;
@@ -1148,6 +1157,18 @@ export const WardrobeIntroAndAuth: React.FC<WardrobeIntroAndAuthProps> = ({ onAu
                       >
                         <span>Vào Tủ Đồ Thông Minh</span>
                         <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          initializeLocalStorageWithMockData();
+                          localStorage.setItem('atelier_aura_last_contact', 'demo@gmail.com');
+                          onAuthenticated(DEMO_USER_PROFILE, false);
+                        }}
+                        className="w-full py-2 px-3 bg-stone-100 hover:bg-stone-200/80 text-stone-800 border border-stone-300 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>⚡ Vào nhanh bằng Tài Khoản Mẫu (demo@gmail.com / 123456)</span>
                       </button>
                     </form>
                   ) : (

@@ -42,6 +42,10 @@ import {
   calculateOutfitFit,
 } from './types';
 import { loadAuraMemory, clearAuraMemory } from './utils/auraMemory';
+import {
+  getOrSeedUserHistory,
+  initializeLocalStorageWithMockData,
+} from './data/mockData';
 import { WardrobeIntroAndAuth } from './components/WardrobeIntroAndAuth';
 import { MannequinStudio } from './components/MannequinStudio';
 import { ArCameraTryOnModal } from './components/ArCameraTryOnModal';
@@ -120,19 +124,17 @@ export default function App() {
     setLearnedContext(null);
   };
 
+  useEffect(() => {
+    initializeLocalStorageWithMockData();
+  }, []);
+
   // Real-time Cloud Synchronization for Personal Outfit History once user logs in this session
   useEffect(() => {
     if (!hasEnteredWardrobeSession || !profile) return;
 
     const loadLocalHistory = () => {
-      try {
-        const localHistoryRaw = localStorage.getItem(`atelier_history_${profile.uid}`);
-        if (localHistoryRaw) {
-          setHistoryItems(JSON.parse(localHistoryRaw));
-        }
-      } catch {
-        // Ignore parse error
-      }
+      const items = getOrSeedUserHistory(profile.uid);
+      setHistoryItems(items);
     };
 
     if (auth.currentUser && isCloudSynced) {

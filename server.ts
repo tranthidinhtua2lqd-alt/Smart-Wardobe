@@ -1,6 +1,7 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
+import fs from 'fs';
 import dotenv from 'dotenv';
 import { GoogleGenAI, GenerateContentResponse, Type } from '@google/genai';
 
@@ -1290,7 +1291,60 @@ Hãy trả về kết quả JSON mô tả chính xác trang phục trong ảnh, 
   }
 });
 
+function ensureDbJsonInitialized() {
+  try {
+    const dbPath = path.join(process.cwd(), 'db.json');
+    if (!fs.existsSync(dbPath)) {
+      const seedData = {
+        users: [
+          {
+            uid: 'user_demo_gmail_com',
+            contactIdentifier: 'demo@gmail.com',
+            contactType: 'email',
+            passwordHash: '254f51f106201053b27848292b285202e3a579850d2a2f768029c97b37735802',
+            otpVerified: true,
+            displayName: 'Minh Thư (Tài Khoản Mẫu)',
+            avatarUrl: '/src/assets/images/avatar_fashion_default_1793893594523.jpg',
+            heightCm: 165,
+            weightKg: 52,
+            bustCm: 86,
+            waistCm: 64,
+            hipCm: 92,
+            genderStyle: 'female',
+            favoriteStyles: ['coquette_babydoll', 'korean_casual', 'preppy_school', 'y2k_acubi'],
+            faceShape: 'round',
+            undertone: 'warm',
+            onboardingCompleted: true,
+          },
+        ],
+        outfits: WARDROBE_CATALOG,
+        tryOnHistory: [
+          {
+            id: 'seed_tryon_1_user_demo_gmail_com',
+            userId: 'user_demo_gmail_com',
+            outfitId: 'outfit_preppy_shirt_tennis_14',
+            outfitName: 'Set Sơ Mi Chiết Eo Nâu Espresso & Chân Váy Tennis Trắng Xếp Ly',
+            category: 'Công sở thanh lịch',
+            imageUrl: '/assets/outfits/outfit_set_14_preppy_shirt_tennis.png',
+            tryOnMode: 'mannequin_3d',
+            recommendedSize: 'M',
+            fitScore: 98,
+            snapshotMeasurements: '165cm · 52kg · 3V: 86-64-92',
+            notes: 'Tôn vòng eo 64cm cực chuẩn theo tỷ lệ vàng 1/3 - 2/3, phù hợp đi học thuyết trình & công sở.',
+            createdAtMs: Date.now() - 3600000 * 12,
+          },
+        ],
+      };
+      fs.writeFileSync(dbPath, JSON.stringify(seedData, null, 2), 'utf-8');
+    }
+  } catch {
+    // Ignore file write errors in read-only environments
+  }
+}
+
 async function startServer() {
+  ensureDbJsonInitialized();
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
