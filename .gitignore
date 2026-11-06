@@ -22,6 +22,9 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+bun.lock
+bun.lockb
+.aistudio/
 .DS_Store
 .idea/
 .vscode/

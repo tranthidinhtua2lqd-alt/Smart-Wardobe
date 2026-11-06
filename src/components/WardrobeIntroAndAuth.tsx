@@ -19,10 +19,10 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firest
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../firebase';
 import { DEFAULT_AVATARS, UserProfile } from '../types';
 
-// EmailJS Configuration from Environment Variables (configured in .env)
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+// EmailJS Configuration (có sẵn giá trị mặc định để chạy ngay khi tải từ GitHub về mà không cần tạo file .env)
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_zpohl0g';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_j43mlzm';
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'qoUpfXhovg5EA3Pm6';
 
 interface WardrobeIntroAndAuthProps {
   onAuthenticated: (profile: UserProfile, isCloudSynced: boolean) => void;
