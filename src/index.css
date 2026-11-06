@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Dynamic Theme Primary Color Variables */
+    --theme-primary: #9A3412;
+    --theme-primary-hover: #7C2D12;
+    --theme-primary-soft: #FFEDD5;
+    --theme-primary-border: #FDBA74;
+    --theme-canvas: #FAF8F5;
+    --theme-surface: #F2ECE1;
+    --theme-text: #18181B;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--theme-canvas);
+    color: var(--theme-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  h1, h2, h3, .font-serif-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  .font-mono-tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom Theme Utility Classes */
+.bg-theme-primary {
+  background-color: var(--theme-primary);
+}
+.bg-theme-primary:hover {
+  background-color: var(--theme-primary-hover);
+}
+.bg-theme-soft {
+  background-color: var(--theme-primary-soft);
+}
+.bg-theme-canvas {
+  background-color: var(--theme-canvas);
+}
+.bg-theme-surface {
+  background-color: var(--theme-surface);
+}
+.text-theme-primary {
+  color: var(--theme-primary);
+}
+.border-theme-primary {
+  border-color: var(--theme-primary);
+}
+.border-theme-soft {
+  border-color: var(--theme-primary-border);
+}
+.accent-theme-primary {
+  accent-color: var(--theme-primary);
+}
+
+/* Perspective for 3D Wardrobe Doors */
+.perspective-1600 {
+  perspective: 1600px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}

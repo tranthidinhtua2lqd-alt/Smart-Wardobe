@@ -1,0 +1,214 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Hardened Global Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(userId) {
+      return isVerifiedUser() && request.auth.uid == userId;
+    }
+
+    // 3. Validation Blueprints (Anti-Update-Gap)
+    function isValidFavoriteStyles(data) {
+      return !('favoriteStyles' in data) || (
+        data.favoriteStyles is list &&
+        data.favoriteStyles.size() <= 20 &&
+        (data.favoriteStyles.size() == 0 || (data.favoriteStyles[0] is string && data.favoriteStyles[0].size() <= 60))
+      );
+    }
+
+    function isValidOnboardingFlag(data) {
+      return !('onboardingCompleted' in data) || (data.onboardingCompleted is bool);
+    }
+
+    function isValidFaceShape(data) {
+      return !('faceShape' in data) || (data.faceShape is string && data.faceShape.size() <= 40);
+    }
+
+    function isValidUndertone(data) {
+      return !('undertone' in data) || (data.undertone is string && data.undertone.size() <= 40);
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'displayName', 'avatarUrl', 'heightCm', 'weightKg',
+        'bustCm', 'waistCm', 'hipCm', 'genderStyle', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'displayName', 'avatarUrl', 'heightCm', 'weightKg',
+        'bustCm', 'waistCm', 'hipCm', 'genderStyle', 'favoriteStyles',
+        'faceShape', 'undertone',
+        'onboardingCompleted', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+      data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == userId &&
+      data.uid == request.auth.uid &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+      data.avatarUrl is string && data.avatarUrl.size() >= 1 && data.avatarUrl.size() <= 2000 &&
+      data.heightCm is number && data.heightCm >= 100 && data.heightCm <= 250 &&
+      data.weightKg is number && data.weightKg >= 25 && data.weightKg <= 250 &&
+      data.bustCm is number && data.bustCm >= 50 && data.bustCm <= 180 &&
+      data.waistCm is number && data.waistCm >= 40 && data.waistCm <= 180 &&
+      data.hipCm is number && data.hipCm >= 50 && data.hipCm <= 180 &&
+      data.genderStyle is string && data.genderStyle.size() <= 20 &&
+      (data.genderStyle == 'female' || data.genderStyle == 'male' || data.genderStyle == 'neutral') &&
+      isValidFavoriteStyles(data) &&
+      isValidFaceShape(data) &&
+      isValidUndertone(data) &&
+      isValidOnboardingFlag(data) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidUserPrivateInfo(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'contactIdentifier', 'contactType', 'passwordHash', 'otpVerified', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'contactIdentifier', 'contactType', 'passwordHash', 'otpVerified', 'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+      data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == userId &&
+      data.uid == request.auth.uid &&
+      data.contactIdentifier is string && data.contactIdentifier.size() >= 3 && data.contactIdentifier.size() <= 160 &&
+      data.contactType is string && data.contactType.size() <= 20 &&
+      (data.contactType == 'email' || data.contactType == 'phone' || data.contactType == 'google') &&
+      data.passwordHash is string && data.passwordHash.size() >= 1 && data.passwordHash.size() <= 256 &&
+      data.otpVerified is bool &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidTryOnHistoryItem(data, userId) {
+      return data.keys().hasAll([
+        'userId', 'outfitId', 'outfitName', 'category', 'imageUrl',
+        'tryOnMode', 'recommendedSize', 'fitScore', 'snapshotMeasurements', 'notes', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'outfitId', 'outfitName', 'category', 'imageUrl',
+        'tryOnMode', 'recommendedSize', 'fitScore', 'snapshotMeasurements', 'notes', 'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == userId &&
+      data.userId == request.auth.uid &&
+      data.outfitId is string && data.outfitId.size() >= 1 && data.outfitId.size() <= 64 &&
+      data.outfitId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.outfitName is string && data.outfitName.size() >= 1 && data.outfitName.size() <= 120 &&
+      data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+      data.imageUrl is string && data.imageUrl.size() >= 1 && data.imageUrl.size() <= 2000 &&
+      data.tryOnMode is string && data.tryOnMode.size() <= 30 &&
+      (data.tryOnMode == 'ar_camera' || data.tryOnMode == 'mannequin_3d' || data.tryOnMode == 'curated_match') &&
+      data.recommendedSize is string && data.recommendedSize.size() >= 1 && data.recommendedSize.size() <= 16 &&
+      data.fitScore is number && data.fitScore >= 0 && data.fitScore <= 100 &&
+      data.snapshotMeasurements is string && data.snapshotMeasurements.size() >= 1 && data.snapshotMeasurements.size() <= 120 &&
+      data.notes is string && data.notes.size() <= 500 &&
+      data.createdAt is timestamp;
+    }
+
+    // 4. Collection Rules
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().uid == userId &&
+        (!('createdAt' in existing()) || incoming().createdAt == existing().createdAt || incoming().createdAt == request.time) &&
+        incoming().updatedAt == request.time;
+
+      allow delete: if false;
+
+      // Subcollection: Isolated PII Credentials & Verification Status
+      match /private/{docId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+        allow list: if false;
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(docId) &&
+          docId == 'credentials' &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().updatedAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+
+        allow update: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(docId) &&
+          docId == 'credentials' &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().uid == userId &&
+          incoming().updatedAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+
+        allow delete: if false;
+      }
+
+      // Subcollection: Personal Outfit Try-On History
+      match /tryOnHistory/{historyId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(historyId) &&
+          (resource == null || existing().userId == request.auth.uid);
+
+        allow list: if isOwner(userId) &&
+          (resource == null || existing().userId == request.auth.uid);
+
+        allow create: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(historyId) &&
+          isValidTryOnHistoryItem(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+
+        allow update: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(historyId) &&
+          isValidTryOnHistoryItem(incoming(), userId) &&
+          incoming().userId == existing().userId &&
+          incoming().outfitId == existing().outfitId &&
+          incoming().createdAt == existing().createdAt &&
+          exists(/databases/$(database)/documents/users/$(userId)) && (
+            // Action: Update personal notes on a tried outfit
+            incoming().diff(existing()).affectedKeys().hasOnly(['notes'])
+          );
+
+        allow delete: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(historyId) &&
+          existing().userId == request.auth.uid &&
+          exists(/databases/$(database)/documents/users/$(userId));
+      }
+    }
+  }
+}

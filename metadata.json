@@ -1,0 +1,10 @@
+{
+  "name": "Smart Wardobe — Tủ Đồ Thông Minh & Thử Đồ AR",
+  "description": "Nền tảng gợi ý phối đồ thông minh, thử đồ thực tế tăng cường (AR) qua camera và manocanh cá nhân hóa theo số đo cơ thể thực tế, đồng bộ hóa đám mây qua Google Firebase.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

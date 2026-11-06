@@ -1,0 +1,204 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public, measurement, and style onboarding profile of the user for personalized mannequin fitting and outfit suggestions.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "avatarUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "heightCm": {
+          "type": "number"
+        },
+        "weightKg": {
+          "type": "number"
+        },
+        "bustCm": {
+          "type": "number"
+        },
+        "waistCm": {
+          "type": "number"
+        },
+        "hipCm": {
+          "type": "number"
+        },
+        "genderStyle": {
+          "type": "string",
+          "enum": ["female", "male", "neutral"],
+          "maxLength": 20
+        },
+        "favoriteStyles": {
+          "type": "array",
+          "description": "List of fashion style IDs selected by the user during onboarding (up to 10)."
+        },
+        "onboardingCompleted": {
+          "type": "boolean",
+          "description": "Whether the user has completed the 2-step Gender & Fashion Style onboarding."
+        },
+        "faceShape": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "User's face shape (round, square, long, heart, oval) for hair styling rules."
+        },
+        "undertone": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "User's skin undertone (warm, cool, neutral) for makeup rules."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "avatarUrl",
+        "heightCm",
+        "weightKg",
+        "bustCm",
+        "waistCm",
+        "hipCm",
+        "genderStyle",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII credentials and verification record for the user.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "contactIdentifier": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "contactType": {
+          "type": "string",
+          "enum": ["email", "phone", "google"],
+          "maxLength": 20
+        },
+        "passwordHash": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "otpVerified": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "contactIdentifier",
+        "contactType",
+        "passwordHash",
+        "otpVerified",
+        "updatedAt"
+      ]
+    },
+    "TryOnHistoryItem": {
+      "title": "TryOnHistoryItem",
+      "description": "Record of a virtual AR or Mannequin outfit try-on session synced across devices.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "outfitId": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "outfitName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tryOnMode": {
+          "type": "string",
+          "enum": ["ar_camera", "mannequin_3d", "curated_match"],
+          "maxLength": 30
+        },
+        "recommendedSize": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "fitScore": {
+          "type": "number"
+        },
+        "snapshotMeasurements": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "outfitId",
+        "outfitId",
+        "outfitName",
+        "category",
+        "imageUrl",
+        "tryOnMode",
+        "recommendedSize",
+        "fitScore",
+        "snapshotMeasurements",
+        "notes",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile, body measurements, and style preferences."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Isolated PII storage for contact identifier (email/phone) and OTP verification status."
+    },
+    "/users/{userId}/tryOnHistory/{historyId}": {
+      "schema": { "$ref": "#/entities/TryOnHistoryItem" },
+      "description": "Personal outfit coordination and virtual try-on history."
+    }
+  }
+}
